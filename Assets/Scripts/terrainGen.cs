@@ -76,10 +76,10 @@ public class terrainGen : MonoBehaviour {
 	
 	public GameObject waterTexture;
 	
-	private List<Vector2> points = new List<Vector2>();
-	private List<Center> centers = new List<Center> ();
-	private List<Edge> edges = new List<Edge>();
-	private List<Corner> corners = new List<Corner>();
+	public List<Vector2> points = new List<Vector2>();
+	public List<Center> centers = new List<Center> ();
+	public List<Edge> edges = new List<Edge>();
+	public List<Corner> corners = new List<Corner>();
 	
 	private Voronoi voronoi;
 	
@@ -217,11 +217,11 @@ public class terrainGen : MonoBehaviour {
 
 		assignOceanCoastAndLand ();
 		
-		foreach (Corner q in corners) {
-			if (q.ocean || q.coast) {
-				q.elevation = 0f;
-			}
-		}		
+//		foreach (Corner q in corners) {
+//			if (q.ocean || q.coast) {
+//				q.elevation = 0f;
+//			}
+//		}		
 		
 		for (int i=0; i <m_heightMapSize; i++)
 			for (int j=0; j<m_heightMapSize; j++)
@@ -271,9 +271,16 @@ public class terrainGen : MonoBehaviour {
 		FillTreeInstancesBiomes (m_terrain);
 		FillDetailMap (m_terrain); 
 
-
+		Field.setCenters (getCenter);
 		Field.start (m_terrain, m_heightMapSize, htmap,object1, object2, object3, waterLimit);
+		Roads roads = new Roads (this);
+		roads.createRoads (this);
 
+		River river = new River ();
+		river.terrainSize = m_terrainSize;
+		river.heightMapSize = m_heightMapSize;
+		river.waterlimit = waterLimit;
+		river.drawRivers (corners);
 	}
 	
 	// Update is called once per frame

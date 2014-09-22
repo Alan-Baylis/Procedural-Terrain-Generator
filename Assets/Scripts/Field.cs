@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 public class Elem{
 
-	public float temperature, moisture, height;
+	public float moisture, height;
 	public int available; //0 je validna vrednost
 	public Position p; //koordinate u matrici
 
@@ -86,7 +86,7 @@ public class Field {
 
 	public static int size, tile=16;
 	public static Elem[,] mat;
-
+	static Center[,] getCenter;
 
 
 
@@ -94,7 +94,7 @@ public class Field {
 
 	static float angleLimit = 20;
 
-	public static void start(Terrain t, int tSize, float [,] htmap, GameObject object1,GameObject object2,GameObject object3,float waterLimit){
+	public static void start(Terrain t, int tSize, float[,] htmap,GameObject object1,GameObject object2,GameObject object3,float waterLimit){
 
 		float[,] newMat = new float[tSize, tSize];
 
@@ -103,9 +103,9 @@ public class Field {
 		size = (tSize+tile-1)/tile+2;
 
 //		newMat = t.terrainData.GetHeights (0, 0, tSize, tSize);
-		newMat=htmap;
+		newMat = htmap;
 		shift (newMat);
-
+		newMat=null;
 		fill ();
 		check (t,waterLimit);
 
@@ -117,12 +117,14 @@ public class Field {
 		printB(newMat);*/
 
 		//(new City ()).arrange (g);
-
-		Debug.Log ("ovde");
 		(new CityPicker ()).setFlags (cc,object1,object2,object3);
 
-		Debug.Log (cc.Count);
+	
 
+	}
+
+	public static void setCenters(Center [,] centers){
+		getCenter = centers;
 	}
 	
 
@@ -138,36 +140,10 @@ public class Field {
 
 		for (int i=1; i<size-1; i++)
 						for (int j=1; j<size-1; j++) {
-							if (mat[i,j].height<=waterLimit) mat[i,j].available=-1;
+							if (mat[i,j].height<waterLimit) mat[i,j].available=-1;
 							else if (mat[i,j].available==1) continue;
-							else{/*			
-								if (Mathf.Atan(Mathf.Abs(mat[i,j].height-mat[i-1,j-1].height))>angleLimit) {
-									mat[i,j].available=mat[i-1,j-1].available=1;
-								}
-								if (Mathf.Atan(Mathf.Abs(mat[i,j].height-mat[i-1,j].height))>angleLimit) {
-									mat[i,j].available=mat[i-1,j].available=1;
-								}
-								if (Mathf.Atan(Mathf.Abs(mat[i,j].height-mat[i-1,j+1].height))>angleLimit) {
-									mat[i,j].available=mat[i-1,j+1].available=1;
-								}
-								if (Mathf.Atan(Mathf.Abs(mat[i,j].height-mat[i,j-1].height))>angleLimit) {
-									mat[i,j].available=mat[i,j-1].available=1;
-								}
-								if (Mathf.Atan(Mathf.Abs(mat[i,j].height-mat[i,j+1].height))>angleLimit) {
-									mat[i,j].available=mat[i,j+1].available=1;
-								}
-								if (Mathf.Atan(Mathf.Abs(mat[i,j].height-mat[i+1,j-1].height))>angleLimit) {
-									mat[i,j].available=mat[i+1,j-1].available=1;
-								}	
-								if (Mathf.Atan(Mathf.Abs(mat[i,j].height-mat[i+1,j].height))>angleLimit) {
-									mat[i,j].available=mat[i+1,j].available=1;
-								}
-								if (Mathf.Atan(Mathf.Abs(mat[i,j].height-mat[i+1,j+1].height))>angleLimit) {
-									mat[i,j].available=mat[i+1,j+1].available=1;
-								}*/
-
+							else{
 								if ((mat[i,j].height-mat[i-1,j-1].height)*512>angleLimit) {
-						//			Debug.Log ((mat[i,j].height-mat[i-1,j-1].height)*512);
 									mat[i,j].available=mat[i-1,j-1].available=1;
 								}
 								if ((mat[i,j].height-mat[i-1,j].height)*512>angleLimit) {
@@ -184,7 +160,7 @@ public class Field {
 								}
 								if ((mat[i,j].height-mat[i+1,j-1].height)*512>angleLimit) {
 									mat[i,j].available=mat[i+1,j-1].available=1;
-								}	
+								}
 								if ((mat[i,j].height-mat[i+1,j].height)*512>angleLimit) {
 									mat[i,j].available=mat[i+1,j].available=1;
 								}
@@ -226,22 +202,35 @@ public class Field {
 		int size = (int)Mathf.Sqrt(newMat.Length);
 		int size1 = (int)Mathf.Sqrt(mat.Length)-2;
 
+
+
 		for (int i=0; i<size1; i++)
 			for (int j=0; j<size1; j++) {
 				mat [i+1, j+1] = new Elem();
-				
+				bool b = false;
 				int k=0;
 				int t=tile*i;
-				while (k<tile && k+t<size){
+				
+				while (k<tile && k+t<size && b==false){
+					
 					int n=0;
 					int t1=tile*j;
-					while (n<tile && n+t1<size){
+					
+					while (n<tile && n+t1<size && b==false){
+						if (newMat[k+t, n+t1]<=0.1){ b=true; break;}
 						mat[i+1,j+1].height+=newMat[k+t, n+t1];
+						
+						mat[i+1,j+1].moisture+= getCenter[k+t,n+t1].moisture;
+						
 						n++;
 					}
 					k++;
 				}
-				mat [i+1,j+1].height/=tile*tile;
+				if (b==true) mat[i+1, j+1].height = -100;
+				else mat [i+1,j+1].height/=tile*tile;
+
+				mat[i+1,j+1].moisture/=tile*tile;
+
 				mat [i+1, j+1].p = new Position(i+1, j+1);
 		}
 	}
@@ -297,10 +286,10 @@ public class Field {
 
 			l.Add (p);
 
-			if (mat[i-1,j].available==0) q.Enqueue(mat[i-1,j]);
-			if (mat[i+1,j].available==0) q.Enqueue(mat[i+1,j]);
-			if (mat[i,j-1].available==0) q.Enqueue(mat[i,j-1]);
-			if (mat[i,j+1].available==0) q.Enqueue(mat[i,j+1]);
+			if (mat[i-1,j].available==0) {q.Enqueue(mat[i-1,j]); mat[i-1,j].available=2;}
+			if (mat[i+1,j].available==0) {q.Enqueue(mat[i+1,j]); mat[i+1,j].available=2;}
+			if (mat[i,j-1].available==0) {q.Enqueue(mat[i,j-1]); mat[i,j-1].available=2;}
+			if (mat[i,j+1].available==0) {q.Enqueue(mat[i,j+1]); mat[i,j+1].available=2;}
 
 			p.available=2;
 
