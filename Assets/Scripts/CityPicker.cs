@@ -12,6 +12,16 @@ public class CityPicker : MonoBehaviour {
 	static float disp = 0.55f;
 	static int[] pq = {-1,-1,-1,1,1,-1,1,1};
 
+	static float heightMapSize, terrainSize;
+	static float ratio;
+
+
+	public CityPicker(float heightMap, float terrain){
+		heightMapSize = heightMap;
+		terrainSize = terrain;
+		ratio = terrainSize / heightMapSize;
+	}
+
 
 	public static Position findCenter(Position p1, Position p2){
 		return new Position ((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
@@ -32,18 +42,17 @@ public class CityPicker : MonoBehaviour {
 		Position p1 = findCenter (findCenter (h.c.north, h.c.south), findCenter (h.c.west, h.c.east));
 		Position p2 = findCenterPlus (findCenterPlus (h.c.north, h.c.south), findCenterPlus (h.c.west, h.c.east));
 
-		if (inList (p1, h.elems) || inList (p2, h.elems))	return true;
+		if (inList (p1, h.elems) || inList (p2, h.elems) || h.elems.Count>20)	return true;
 		else return false;
 	
 	}
 	
 	public void setFlags(List<Heads> l,GameObject object1,GameObject object2,GameObject object3){
-	
+
 		foreach (Heads h in l) {
 			if (checkShape(h)==true)
 				setFlag (h,object1,object2,object3);
 		}
-		//setFlag (l,g);
 	}
 
 	public static bool checkMoisAndTemp(Heads h){
@@ -69,7 +78,7 @@ public class CityPicker : MonoBehaviour {
 
 		foreach (Elem el in h.elems){
 
-			GameObject c = (GameObject)Instantiate (object1, new Vector3 ((el.p.y-1)* Field.tile*8,Field.mat [el.p.x, el.p.y].height *512,(el.p.x-1)* Field.tile*8), Quaternion.identity);
+			GameObject c = (GameObject)Instantiate (object1, new Vector3 ((el.p.y-1)* Field.tile*ratio,Field.mat [el.p.x, el.p.y].height *512,(el.p.x-1)* Field.tile*ratio), Quaternion.identity);
 			c.transform.position = new Vector3(c.transform.position.x, (float)(c.transform.position.y + disp*c.transform.localScale.y/2), c.transform.position.z);
 			c.transform.eulerAngles = new Vector3(c.transform.rotation.x, Random.Range(0, 360), c.transform.rotation.z);
 			if (el.height>=0.2)
@@ -79,7 +88,7 @@ public class CityPicker : MonoBehaviour {
 					int p,q;
 					p=pq[i*2];
 					q=pq[i*2+1];
-					c = (GameObject)Instantiate (object1, new Vector3 ((el.p.y-1)* Field.tile*8-p*50,Field.mat [el.p.x, el.p.y].height *512,(el.p.x-1)* Field.tile*8-q*50), Quaternion.identity);
+					c = (GameObject)Instantiate (object1, new Vector3 ((el.p.y-1)* Field.tile*ratio-p*50,Field.mat [el.p.x, el.p.y].height *512,(el.p.x-1)* Field.tile*ratio-q*50), Quaternion.identity);
 					c.transform.position = new Vector3(c.transform.position.x, (float)(c.transform.position.y + disp*c.transform.localScale.y/2-5), c.transform.position.z);
 					c.transform.eulerAngles = new Vector3(c.transform.rotation.x, Random.Range(0, 360), c.transform.rotation.z);
 				}
@@ -115,37 +124,36 @@ public class CityPicker : MonoBehaviour {
 
 		foreach (Elem el in h.elems) {
 
-				int r = Random.Range (0, 11);
-				GameObject c;
-				if (r > 2) {
-							r = Random.Range (0, 11);
-							if (r <= 2)
-									c = (GameObject)Instantiate (object1, new Vector3 ((el.p.y - 1) * Field.tile * 8, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1) * Field.tile * 8), Quaternion.identity);
-							else if (r <= 4)
-									c = (GameObject)Instantiate (object3, new Vector3 ((el.p.y - 1) * Field.tile * 8, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1) * Field.tile * 8), Quaternion.identity);
-							else
-									c = (GameObject)Instantiate (object2, new Vector3 ((el.p.y - 1) * Field.tile * 8, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1) * Field.tile * 8), Quaternion.identity);
+			int r = Random.Range (0, 11);
+			GameObject c;
+			if (r > 2) {
+				for (int j=0;j<4;j++){
+					r = Random.Range (0, 14);
+					int p = pq[j*2];
+					int q = pq[j*2+1];
+					if (r<=10){
+						if (r <= 2)
+							c = (GameObject)Instantiate (object1, new Vector3 ((el.p.y - 1 - 0.25f*p) * Field.tile * ratio, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1 - 0.25f*q) * Field.tile * ratio), Quaternion.identity);
+						else if (r <= 4)
+							c = (GameObject)Instantiate (object3, new Vector3 ((el.p.y - 1 - 0.25f*p) * Field.tile * ratio, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1 - 0.25f*q) * Field.tile * ratio), Quaternion.identity);
+						else
+							c = (GameObject)Instantiate (object2, new Vector3 ((el.p.y - 1 - 0.25f*p) * Field.tile * ratio, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1 - 0.25f*q) * Field.tile * ratio), Quaternion.identity);
 
-							c.transform.position = new Vector3 (c.transform.position.x, (float)(c.transform.position.y + disp * c.transform.localScale.y / 2-5), c.transform.position.z);
-							c.transform.eulerAngles = new Vector3 (c.transform.rotation.x, Random.Range (0, 360), c.transform.rotation.z);
+						c.transform.position = new Vector3 (c.transform.position.x, (float)(c.transform.position.y + disp * c.transform.localScale.y / 2-5), c.transform.position.z);
+						c.transform.eulerAngles = new Vector3 (c.transform.rotation.x, Random.Range (0, 360), c.transform.rotation.z);
+					}
+				}
 
-				rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * 8-Field.tile*4, el.height*1000, (el.p.x - 1) * Field.tile * 8-Field.tile*4);
-				rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * 8-Field.tile*4, el.height*1000, (el.p.x - 1) * Field.tile * 8+Field.tile*4);
-				rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * 8+Field.tile*4, el.height*1000, (el.p.x - 1) * Field.tile * 8+Field.tile*4);
-				rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * 8+Field.tile*4, el.height*1000, (el.p.x - 1) * Field.tile * 8-Field.tile*4);
-
-
-
-				/*rPoints[i++] = new Vector3(el.p.y*Field.tile*8, el.height*1000, el.p.x*Field.tile*8);
-				rPoints[i++] = new Vector3(el.p.y*Field.tile*8, el.height*1000, (el.p.x-1)*Field.tile*8);
-				rPoints[i++] = new Vector3((el.p.y-1)*Field.tile*8, el.height*1000, (el.p.x-1)*Field.tile*8);
-				rPoints[i++] = new Vector3((el.p.y-1)*Field.tile*8, el.height*1000, el.p.x*Field.tile*8);*/	
 			}
 
+			rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * ratio-Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio-Field.tile*ratio/2);
+			rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * ratio-Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio+Field.tile*ratio/2);
+			rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * ratio+Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio+Field.tile*ratio/2);
+			rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * ratio+Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio-Field.tile*ratio/2);
+			
 
 
 		}
-
 
 		draw (rPoints);
 
@@ -160,23 +168,28 @@ public class CityPicker : MonoBehaviour {
 						int r = Random.Range (0, 11);
 						GameObject c; 
 						if (r > 2) {
-								r = Random.Range (0, 2);
-								if (r == 0)
-										c = (GameObject)Instantiate (object2, new Vector3 ((el.p.y - 1) * Field.tile * 8, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1) * Field.tile * 8), Quaternion.identity);
-								else
-										c = (GameObject)Instantiate (object3, new Vector3 ((el.p.y - 1) * Field.tile * 8, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1) * Field.tile * 8), Quaternion.identity);
+							for (int j=0;j<4;j++){
+								r = Random.Range (0, 4);
+								int p = pq[j*2];
+								int q = pq[j*2+1];
+								if (r<=2){
+									if (r == 0)
+											c = (GameObject)Instantiate (object2, new Vector3 ((el.p.y - 1 - 0.25f*p) * Field.tile * ratio, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1 - 0.25f*q) * Field.tile * ratio), Quaternion.identity);
+									else
+											c = (GameObject)Instantiate (object3, new Vector3 ((el.p.y - 1 - 0.25f*p) * Field.tile * ratio, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1 - 0.25f*q) * Field.tile * ratio), Quaternion.identity);
 
-								c.transform.position = new Vector3 (c.transform.position.x, (float)(c.transform.position.y + disp * c.transform.localScale.y / 2-5), c.transform.position.z);
-								c.transform.eulerAngles = new Vector3 (c.transform.rotation.x, Random.Range (0, 360), c.transform.rotation.z);
-
-				rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * 8-Field.tile*4, el.height*1000, (el.p.x - 1) * Field.tile * 8-Field.tile*4);
-				rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * 8-Field.tile*4, el.height*1000, (el.p.x - 1) * Field.tile * 8+Field.tile*4);
-				rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * 8+Field.tile*4, el.height*1000, (el.p.x - 1) * Field.tile * 8+Field.tile*4);
-				rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * 8+Field.tile*4, el.height*1000, (el.p.x - 1) * Field.tile * 8-Field.tile*4);
-				
+									c.transform.position = new Vector3 (c.transform.position.x, (float)(c.transform.position.y + disp * c.transform.localScale.y / 2-5), c.transform.position.z);
+									c.transform.eulerAngles = new Vector3 (c.transform.rotation.x, Random.Range (0, 360), c.transform.rotation.z);
+								}
+							}
+								
 
 						}
 		
+			rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * ratio-Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio-Field.tile*ratio/2);
+			rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * ratio-Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio+Field.tile*ratio/2);
+			rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * ratio+Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio+Field.tile*ratio/2);
+			rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * ratio+Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio-Field.tile*ratio/2);
 
 
 		}

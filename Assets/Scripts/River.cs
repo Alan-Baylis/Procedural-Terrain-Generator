@@ -4,9 +4,11 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class River : MonoBehaviour {
+	public Texture2D riverTexture;
 	public float terrainSize;
 	public float heightMapSize;
 	public float waterlimit;
+
 	public void drawRivers(List<Corner> Corner) {
 		bool[] rivermade=new bool[Corner.Count];
 
@@ -142,16 +144,29 @@ public class River : MonoBehaviour {
 //			{
 //				edgePoints[i]=points[i].point;
 //			}
-			for(int i=1;i<edgePoints.Length;i++)
-			{
-				
-				float beginY= edgePoints[i].x * terrainSize / heightMapSize;// - terrainSize/2;
-				float beginX = edgePoints[i].y * terrainSize / heightMapSize;//- terrainSize/2;
-				float endY = edgePoints[i-1].x * terrainSize / heightMapSize;//-terrainSize/2;
-				float endX = edgePoints[i-1].y * terrainSize / heightMapSize;//- terrainSize/2;
-				
-				Debug.DrawLine (new Vector3 (beginX, Terrain.activeTerrain.SampleHeight(new Vector3(beginX,0.0f,beginY)) + 10.0f, beginY), new Vector3 (endX, Terrain.activeTerrain.SampleHeight(new Vector3(endX, 0.0f, endY))+10.0f, endY), Color.red, 1000.0f);
+
+			for (int i=0; i<edgePoints.Length; i++){
+				edgePoints[i].x  *= (float)terrainSize / heightMapSize;
+				edgePoints[i].y *= (float)terrainSize / heightMapSize;
 			}
+
+
+			PathGenerator pathGenerator = new PathGenerator();
+			pathGenerator.texture = riverTexture;
+			pathGenerator.generate (new List<Vector2>(edgePoints));
+
+
+
+//			for(int i=1;i<edgePoints.Length;i++)
+//			{
+//				
+//				float beginY= edgePoints[i].x;// * terrainSize / heightMapSize;// - terrainSize/2;
+//				float beginX = edgePoints[i].y;// * terrainSize / heightMapSize;//- terrainSize/2;
+//				float endY = edgePoints[i-1].x;// * terrainSize / heightMapSize;//-terrainSize/2;
+//				float endX = edgePoints[i-1].y;// * terrainSize / heightMapSize;//- terrainSize/2;
+//				
+//				Debug.DrawLine (new Vector3 (beginX, Terrain.activeTerrain.SampleHeight(new Vector3(beginX,0.0f,beginY)) + 10.0f, beginY), new Vector3 (endX, Terrain.activeTerrain.SampleHeight(new Vector3(endX, 0.0f, endY))+10.0f, endY), Color.red, 1000.0f);
+//			}
 				
 				}
 

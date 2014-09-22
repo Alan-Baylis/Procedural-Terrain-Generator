@@ -29,6 +29,7 @@ public class Coords{
 public class Heads{
 	public Coords c;
 	public List<Elem> elems;
+	public Vector3[] roadPoints;
 
 	public Heads(){
 		c = new Coords();
@@ -102,7 +103,7 @@ public class Field {
 		mat = new Elem[(tSize+tile-1)/tile+2,(tSize+tile-1)/tile+2];
 		size = (tSize+tile-1)/tile+2;
 
-//		newMat = t.terrainData.GetHeights (0, 0, tSize, tSize);
+
 		newMat = htmap;
 		shift (newMat);
 		newMat=null;
@@ -112,14 +113,7 @@ public class Field {
 		connectedComponents();
 
 
-	/*	printH();
-		printA();
-		printB(newMat);*/
-
-		//(new City ()).arrange (g);
-		(new CityPicker ()).setFlags (cc,object1,object2,object3);
-
-	
+		(new CityPicker (tSize, t.terrainData.size.x)).setFlags (cc,object1,object2,object3);
 
 	}
 

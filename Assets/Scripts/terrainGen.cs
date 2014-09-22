@@ -7,7 +7,10 @@ using Delaunay;
 using Delaunay.Geo;
 
 public class terrainGen : MonoBehaviour {
-	
+
+	public Texture2D road;
+	public Texture2D riverTexture;
+
 	public int m_heightMapSize = 513; //Higher number will create more detailed height maps
 	public int m_alphaMapSize = 1024; //This is the control map that controls how the splat textures will be blended
 	
@@ -108,7 +111,16 @@ public class terrainGen : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
+
+		TerrainData terrainData = new TerrainData();
 		
+		terrainData.heightmapResolution = m_heightMapSize;
+
+		terrainData.size = new Vector3(m_terrainSize, m_terrainHeight, m_terrainSize);
+
+		terrainData.alphamapResolution = m_alphaMapSize;
+
+
 		//add random points
 		
 		for (int i=0; i< numPoints; i++) {
@@ -182,27 +194,47 @@ public class terrainGen : MonoBehaviour {
 
 		//terrainData.detailPrototypes = m_detailProtoTypes;
 
-		FillHeights(htmap);
 		
+		terrainData.splatPrototypes = m_splatPrototypes.ToArray();
+		terrainData.treePrototypes = m_treeProtoTypes.ToArray();
+		terrainData.detailPrototypes = m_detailProtoTypes;
+		m_terrain = Terrain.CreateTerrainGameObject(terrainData).GetComponent<Terrain>();
+
+		FillHeights(htmap);
+
+		terrainData.SetHeights(0, 0, htmap);
 		
 		//float ratio = (float)(m_heightMapSize-1)/m_terrainSize;
 		
-		
+
 		foreach (Corner p in corners) {
 
 
+			Vector2 coords = new Vector2(p.point.x*m_terrainSize/m_heightMapSize,p.point.y*m_terrainSize/m_heightMapSize);
 
-			int elevX = (int) (p.point.x);
-			int elevY = (int) (p.point.y);
+			p.elevation = Terrain.activeTerrain.SampleHeight(new Vector3(coords.x,0.0f,coords.y));
+			p.elevation/= m_terrainHeight;
+
 			
-			if (elevX == m_heightMapSize) elevX--;
-			if (elevY == m_heightMapSize) elevY--;
+			p.water = p.elevation < waterLimit; //* (heightMaximum - heightMinimum) + heightMinimum;
 			
-			p.elevation = htmap [elevX, elevY] ;
-			
-			p.water = htmap[elevX, elevY] < waterLimit; //* (heightMaximum - heightMinimum) + heightMinimum;
-			
-		} 
+		}
+
+//		foreach (Corner p in corners) {
+//
+//
+//
+//			int elevX = (int) (p.point.x);
+//			int elevY = (int) (p.point.y);
+//			
+//			if (elevX == m_heightMapSize) elevX--;
+//			if (elevY == m_heightMapSize) elevY--;
+//			
+//			p.elevation = htmap [elevX, elevY] ;
+//			
+//			p.water = htmap[elevX, elevY] < waterLimit; //* (heightMaximum - heightMinimum) + heightMinimum;
+//			
+//		} 
 		
 		
 		//create water
@@ -245,20 +277,12 @@ public class terrainGen : MonoBehaviour {
 		assignBiomes ();
 
 		
-		TerrainData terrainData = new TerrainData();
-		
-		terrainData.heightmapResolution = m_heightMapSize;
-		terrainData.SetHeights(0, 0, htmap);
-		terrainData.size = new Vector3(m_terrainSize, m_terrainHeight, m_terrainSize);
-		terrainData.splatPrototypes = m_splatPrototypes.ToArray();
-		terrainData.treePrototypes = m_treeProtoTypes.ToArray();
-		terrainData.alphamapResolution = m_alphaMapSize;
-		terrainData.detailPrototypes = m_detailProtoTypes;
+
 		//FillAlphaMapByHeights (terrainData,htmap);
 		FillAlphaMapByBiomes (terrainData);
 		
 		
-		m_terrain = Terrain.CreateTerrainGameObject(terrainData).GetComponent<Terrain>();
+
 		m_terrain.transform.position = new Vector3(0, 0, 0); // zasto?
 		
 		
@@ -271,16 +295,14 @@ public class terrainGen : MonoBehaviour {
 		FillTreeInstancesBiomes (m_terrain);
 		FillDetailMap (m_terrain); 
 
-		Field.setCenters (getCenter);
-		Field.start (m_terrain, m_heightMapSize, htmap,object1, object2, object3, waterLimit);
-		Roads roads = new Roads (this);
-		roads.createRoads (this);
+		fillCities ();
 
-		River river = new River ();
-		river.terrainSize = m_terrainSize;
-		river.heightMapSize = m_heightMapSize;
-		river.waterlimit = waterLimit;
-		river.drawRivers (corners);
+
+
+
+		generateRivers ();
+		generateRoads ();
+
 	}
 	
 	// Update is called once per frame
@@ -987,6 +1009,56 @@ public class terrainGen : MonoBehaviour {
 		terrain.terrainData.SetDetailLayer(0,0,1,detailMap1);
 		terrain.terrainData.SetDetailLayer(0,0,2,detailMap2);
 		
+	}
+
+	private void generateRivers(){
+//		
+//		RiverGenerator riverGenerator = new RiverGenerator ();
+//		List<Vector2> p = new List<Vector2> ();
+
+		River river = new River ();
+		river.riverTexture = riverTexture;
+		river.terrainSize = m_terrainSize;
+		river.heightMapSize = m_heightMapSize;
+		river.waterlimit = waterLimit;
+		river.drawRivers (corners);
+
+//		p.Add (new Vector2 (1,1));
+//		p.Add (new Vector2 (1,2));
+//		p.Add (new Vector2 (2,1));
+//		p.Add (new Vector2 (2,2));
+//		p.Add (new Vector2 (3,1));
+//		p.Add (new Vector2 (3,2));
+//		p.Add (new Vector2 (5,1));
+//		p.Add (new Vector2 (5,4));
+		
+//		riverGenerator.road = road;
+//		
+//		riverGenerator.generate (new List<Vector2>(riverPoints));
+		
+	}
+
+	private void generateRoads(){
+
+		Roads roads = new Roads (this);
+		roads.createRoads (this);
+
+		
+	}
+
+	private void fillCities(){
+		Field.setCenters (getCenter);
+		Field.start (m_terrain, m_heightMapSize, htmap, object1, object2, object3, waterLimit);
+
+		foreach (GameObject house in GameObject.FindGameObjectsWithTag("house")) {
+				//house.transform.position += new Vector3 (-terrainSizeX / 2, 0, -terrainSizeY/2);
+			float x =house.transform.position.x;
+			float z = house.transform.position.z;
+			float y = Terrain.activeTerrain.SampleHeight(house.transform.position) ;
+			y += house.transform.lossyScale.y/2 - 1.4f;
+			house.transform.position = new Vector3 (x,y,z);
+		}
+
 	}
 }
 

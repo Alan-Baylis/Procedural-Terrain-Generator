@@ -9,13 +9,17 @@ public class Roads {
 	public int[] road; // edge index -> int contour level
 	public List<Edge>[] roadConnection;// center index -> array of Edges with roads
 	//public terrainGen map;
+
+	public float terrainSize;
+	public float heightMapSize;
+	public Texture2D roadTexture;
+
 	public Roads(terrainGen map) {
 	//	this.map = map;
 		road = new int[map.edges.Count]; 
 		roadConnection = new List<Edge>[map.centers.Count]; 
+		roadTexture = map.road;
 	}
-	public float terrainSize;
-	public float heightMapSize;
 	
 	// We want to mark different elevation zones so that we can draw
 	// island-circling roads that divide the areas.
@@ -31,7 +35,7 @@ public class Roads {
 
 				List<Center> queue = new List<Center> ();
 				//var p:Center, q:Corner, r:Center, edge:Edge, newLevel:int;
-				float[] elevationThresholds = {0.0f, 0.15f, 0.28f, 0.45f, 0.65f};
+				float[] elevationThresholds = {0.0f, 0.15f, 0.28f, 0.43f, 0.6f};
 		elevationThresholds [1] = map.waterLimit + 0.02f;
 				int[] cornerContour = new int[map.corners.Count];  // corner index -> int contour level
 				int[] centerContour = new int[map.centers.Count]; // center index -> int contour level
@@ -163,7 +167,7 @@ public class Roads {
 										//Debug.Log (oneRoad.Count);
 
 								}
-								Generate(oneRoad.ToArray(),5-hr,0.5f);
+								Generate(oneRoad.ToArray(),6-hr,0.5f);
 						}
 				}
 		}	
@@ -241,13 +245,23 @@ public class Roads {
 //						{
 //							edgePoints[ii]=points[ii];
 //						}
-						for (int ii=1; ii<edgePoints.Length; ii++) {
-								float beginY = edgePoints [ii].x * terrainSize / heightMapSize;// - terrainSize/2;
-								float beginX = edgePoints [ii].y * terrainSize / heightMapSize;//- terrainSize/2;
-								float endY = edgePoints [ii - 1].x * terrainSize / heightMapSize;//-terrainSize/2;
-								float endX = edgePoints [ii - 1].y * terrainSize / heightMapSize;
-								Debug.DrawLine (new Vector3 (beginX, Terrain.activeTerrain.SampleHeight (new Vector3 (beginX, 0.0f, beginY)) + 100.0f, beginY), new Vector3 (endX, Terrain.activeTerrain.SampleHeight (new Vector3 (endX, 0.0f, endY)) + 100.0f, endY), Color.yellow, 1000.0f);
+
+						for (int i=0; i<edgePoints.Length; i++){
+							edgePoints[i].x  *= (float)terrainSize / heightMapSize;
+							edgePoints[i].y *= (float)terrainSize / heightMapSize;
 						}
+
+						PathGenerator pathGenerator = new PathGenerator();
+						pathGenerator.texture = roadTexture;
+						pathGenerator.generate (new List<Vector2>(edgePoints));
+						
+//						for (int ii=1; ii<edgePoints.Length; ii++) {
+//								float beginY = edgePoints [ii].x * terrainSize / heightMapSize;// - terrainSize/2;
+//								float beginX = edgePoints [ii].y * terrainSize / heightMapSize;//- terrainSize/2;
+//								float endY = edgePoints [ii - 1].x * terrainSize / heightMapSize;//-terrainSize/2;
+//								float endX = edgePoints [ii - 1].y * terrainSize / heightMapSize;
+//								Debug.DrawLine (new Vector3 (beginX, Terrain.activeTerrain.SampleHeight (new Vector3 (beginX, 0.0f, beginY)) + 100.0f, beginY), new Vector3 (endX, Terrain.activeTerrain.SampleHeight (new Vector3 (endX, 0.0f, endY)) + 100.0f, endY), Color.yellow, 1000.0f);
+//						}
 				
 					}
 			
