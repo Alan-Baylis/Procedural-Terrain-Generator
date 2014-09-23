@@ -200,7 +200,7 @@ public class terrainGen : MonoBehaviour {
 		terrainData.detailPrototypes = m_detailProtoTypes;
 		m_terrain = Terrain.CreateTerrainGameObject(terrainData).GetComponent<Terrain>();
 
-		FillHeights(htmap);
+		FillHeights(htmap); // ovde je terren
 
 		terrainData.SetHeights(0, 0, htmap);
 		
@@ -279,7 +279,7 @@ public class terrainGen : MonoBehaviour {
 		
 
 		//FillAlphaMapByHeights (terrainData,htmap);
-		FillAlphaMapByBiomes (terrainData);
+		FillAlphaMapByBiomes (terrainData); // postavlja texture
 		
 		
 
@@ -293,15 +293,17 @@ public class terrainGen : MonoBehaviour {
 		//FillTreeInstances (m_terrain,htmap);
 		
 		FillTreeInstancesBiomes (m_terrain);
-		FillDetailMap (m_terrain); 
+		FillDetailMap (m_terrain); // vegetacija
 
-		fillCities ();
+	
 
 
 
 
 		generateRivers ();
 		generateRoads ();
+
+		fillCities ();
 
 	}
 	

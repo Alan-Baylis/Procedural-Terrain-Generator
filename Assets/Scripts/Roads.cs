@@ -8,18 +8,16 @@ public class Roads {
 	// these are sparse arrays, only filled in where there are roads.
 	public int[] road; // edge index -> int contour level
 	public List<Edge>[] roadConnection;// center index -> array of Edges with roads
-	//public terrainGen map;
-
-	public float terrainSize;
-	public float heightMapSize;
 	public Texture2D roadTexture;
-
+	//public terrainGen map;
 	public Roads(terrainGen map) {
 	//	this.map = map;
 		road = new int[map.edges.Count]; 
 		roadConnection = new List<Edge>[map.centers.Count]; 
 		roadTexture = map.road;
 	}
+	public float terrainSize;
+	public float heightMapSize;
 	
 	// We want to mark different elevation zones so that we can draw
 	// island-circling roads that divide the areas.
@@ -35,8 +33,8 @@ public class Roads {
 
 				List<Center> queue = new List<Center> ();
 				//var p:Center, q:Corner, r:Center, edge:Edge, newLevel:int;
-				float[] elevationThresholds = {0.0f, 0.15f, 0.28f, 0.43f, 0.6f};
-		elevationThresholds [1] = map.waterLimit + 0.02f;
+				float[] elevationThresholds = {0.0f, 0.15f, 0.28f, 0.45f, 0.65f};
+				elevationThresholds [1] = map.waterLimit + 0.02f;
 				int[] cornerContour = new int[map.corners.Count];  // corner index -> int contour level
 				int[] centerContour = new int[map.centers.Count]; // center index -> int contour level
 				bool[] roadMade = new bool[map.centers.Count];
@@ -73,19 +71,45 @@ public class Roads {
 				                                   centerContour [p.index] != 0 ? centerContour [p.index] : 999);
 						}
 				}
-				int a = 100, b = -100;
+		int a = 100, b = -100; bool boolean = true;
 				// Roads go between polygons that have different contour levels
 				foreach (Center p in map.centers) {
 						//Debug.Log ("indeks centra" + p.index+ "indexi edgeva");
 						foreach (Edge edge in p.borders) {
 								if (edge.v0 != null && edge.v1 != null
 										&& cornerContour [edge.v0.index] != cornerContour [edge.v1.index]) {
+
+
 										road [edge.index] = Mathf.Min (cornerContour [edge.v0.index],
 					                             cornerContour [edge.v1.index]);
 										if (roadConnection [p.index] == null) {
 												roadConnection [p.index] = new List<Edge> ();
 										}
-										roadConnection [p.index].Add (edge);
+
+
+
+
+
+
+
+
+
+
+										//OVDE SE MENJAAAAA
+										Heads h;
+										if ((h = inTown (Field.cc, edge.d0)) !=null){
+											edge.d0.point = change(h.roadPoints, edge.d0);
+										}
+										if ((h = inTown (Field.cc, edge.d1)) !=null){
+											edge.d1.point = change (h.roadPoints, edge.d1);
+										}
+										roadConnection[p.index].Add(edge);
+
+
+
+
+
+
 
 										//Debug.Log(" "+edge.index);
 										if (road [edge.index] < a)
@@ -102,7 +126,7 @@ public class Roads {
 
 						}
 				}
-				Debug.Log (a + "   " + b);
+				
 				foreach (Center p in map.centers) {
 						if (roadConnection [p.index] != null && roadConnection [p.index].Count == 2 && !roadMade [p.index]) {
 								List<Vector2> oneRoad = new List<Vector2> ();
@@ -134,7 +158,7 @@ public class Roads {
 								roadMade [p.index] = true;
 								if (nq == p) {
 										oneRoad.Add (oneRoad [1]);
-					oneRoad.Add(oneRoad[2]);
+										oneRoad.Add(oneRoad[2]);
 										//dodaj sporedni putic i iscrtaj
 								} else {
 										Vector2 endp = oneRoad [oneRoad.Count - 2];
@@ -167,7 +191,7 @@ public class Roads {
 										//Debug.Log (oneRoad.Count);
 
 								}
-								Generate(oneRoad.ToArray(),6-hr,0.5f);
+								Generate(oneRoad.ToArray(),5-hr,0.5f);
 						}
 				}
 		}	
@@ -217,57 +241,107 @@ public class Roads {
 			return ret;
 		}
 		
-		public void Generate(Vector2[] points,int volume, float dist)
-		{
-				if (points.Length >= 4) {
-						//				throw new ArgumentException("CatmullRomSpline requires at least 4 points", "points");
-				
-						List<Vector2> splinePoints = new List<Vector2> ();
-						for (int i = 0; i < points.Length - 3; i++) {
-								float dist2 = Mathf.Pow ((points [i + 1].x - points [i + 2].x), 2) + Mathf.Pow ((points [i + 1].y - points [i + 2].y), 2);
-								dist2 = Mathf.Pow (dist2, 0.5f);
-								int numPoints = Mathf.Max ((int)(dist2 / dist), 1);
-								for (int j = 0; j< numPoints; j++) {
-										splinePoints.Add (pointOnCurve (points [i], points [i + 1], points [i + 2], points [i + 3], (1f / numPoints) * j));
-
-								}
-							}
-								splinePoints.Add (points [points.Length - 2]);
-						
-								Vector2[] edgePoints = edgePointsOnCurve (splinePoints.ToArray (), volume);
-//														Vector2[]edgePoints=new Vector2[splinePoints.Count];
-//											for (int i=0; i<splinePoints.Count;i++)
-//											{
-//												edgePoints[i]=splinePoints[i];
-//											}
-//						Vector2[]edgePoints=new Vector2[points.Length];
-//						for (int ii=0; ii<points.Length;ii++)
-//						{
-//							edgePoints[ii]=points[ii];
-//						}
-
-						for (int i=0; i<edgePoints.Length; i++){
-							edgePoints[i].x  *= (float)terrainSize / heightMapSize;
-							edgePoints[i].y *= (float)terrainSize / heightMapSize;
-						}
-
-						PathGenerator2 pathGenerator = new PathGenerator2();
-						pathGenerator.texture = roadTexture;
-						pathGenerator.height = 0.5f;
-						pathGenerator.generate (new List<Vector2>(edgePoints));
-						
-//						for (int ii=1; ii<edgePoints.Length; ii++) {
-//								float beginY = edgePoints [ii].x * terrainSize / heightMapSize;// - terrainSize/2;
-//								float beginX = edgePoints [ii].y * terrainSize / heightMapSize;//- terrainSize/2;
-//								float endY = edgePoints [ii - 1].x * terrainSize / heightMapSize;//-terrainSize/2;
-//								float endX = edgePoints [ii - 1].y * terrainSize / heightMapSize;
-//								Debug.DrawLine (new Vector3 (beginX, Terrain.activeTerrain.SampleHeight (new Vector3 (beginX, 0.0f, beginY)) + 100.0f, beginY), new Vector3 (endX, Terrain.activeTerrain.SampleHeight (new Vector3 (endX, 0.0f, endY)) + 100.0f, endY), Color.yellow, 1000.0f);
-//						}
-				
-					}
+	public void Generate(Vector2[] points,int volume, float dist)
+	{
+		if (points.Length >= 4) {
+			//				throw new ArgumentException("CatmullRomSpline requires at least 4 points", "points");
 			
-
+			List<Vector2> splinePoints = new List<Vector2> ();
+			for (int i = 0; i < points.Length - 3; i++) {
+				float dist2 = Mathf.Pow ((points [i + 1].x - points [i + 2].x), 2) + Mathf.Pow ((points [i + 1].y - points [i + 2].y), 2);
+				dist2 = Mathf.Pow (dist2, 0.5f);
+				int numPoints = Mathf.Max ((int)(dist2 / dist), 1);
+				for (int j = 0; j< numPoints; j++) {
+					splinePoints.Add (pointOnCurve (points [i], points [i + 1], points [i + 2], points [i + 3], (1f / numPoints) * j));
+					
+				}
+			}
+			splinePoints.Add (points [points.Length - 2]);
+			
+			Vector2[] edgePoints = edgePointsOnCurve (splinePoints.ToArray (), volume);
+			//														Vector2[]edgePoints=new Vector2[splinePoints.Count];
+			//											for (int i=0; i<splinePoints.Count;i++)
+			//											{
+			//												edgePoints[i]=splinePoints[i];
+			//											}
+			//						Vector2[]edgePoints=new Vector2[points.Length];
+			//						for (int ii=0; ii<points.Length;ii++)
+			//						{
+			//							edgePoints[ii]=points[ii];
+			//						}
+			
+			for (int i=0; i<edgePoints.Length; i++){
+				edgePoints[i].x  *= (float)terrainSize / heightMapSize;
+				edgePoints[i].y *= (float)terrainSize / heightMapSize;
+			}
+			
+			PathGenerator2 pathGenerator = new PathGenerator2();
+			pathGenerator.texture = roadTexture;
+			pathGenerator.height = 0.5f;
+			pathGenerator.generate (new List<Vector2>(edgePoints));
+			
+			//						for (int ii=1; ii<edgePoints.Length; ii++) {
+			//								float beginY = edgePoints [ii].x * terrainSize / heightMapSize;// - terrainSize/2;
+			//								float beginX = edgePoints [ii].y * terrainSize / heightMapSize;//- terrainSize/2;
+			//								float endY = edgePoints [ii - 1].x * terrainSize / heightMapSize;//-terrainSize/2;
+			//								float endX = edgePoints [ii - 1].y * terrainSize / heightMapSize;
+			//								Debug.DrawLine (new Vector3 (beginX, Terrain.activeTerrain.SampleHeight (new Vector3 (beginX, 0.0f, beginY)) + 100.0f, beginY), new Vector3 (endX, Terrain.activeTerrain.SampleHeight (new Vector3 (endX, 0.0f, endY)) + 100.0f, endY), Color.yellow, 1000.0f);
+			//						}
+			
 		}
+		
+		
+	}
+	//kordinate za proveru puteva
+
+
+
+	public bool inElem(Elem e, Center c){
+
+		float limit = Field.tile * CityPicker.ratio;
+
+		for (int i=0;i<limit;i++){
+			for (int j=0;j<limit;j++){
+
+				float x = e.p.y*limit - (i + limit/2);
+				float y = e.p.x*limit - (j + limit/2);
+
+				if (c.point.y*CityPicker.ratio==x && c.point.x*CityPicker.ratio==y)
+					return true;
+			}
+		}
+
+		return false;
+	}
+
+	public Heads inTown(List<Heads> l, Center c){
+
+
+		foreach (Heads h in l){
+			foreach(Elem e in h.elems){
+				if (inElem(e,c)){
+					return h;
+				}
+			}
+		}
+		return null;
+	}
+
+	public Vector2 change(Vector3[] roadPoints, Center c){
+		float min = 0;
+		Vector2 v = Vector2.zero;
+
+		if (roadPoints != null)
+			for (int i=0;i<roadPoints.Length;i++){
+				float r = Mathf.Sqrt(Mathf.Pow (c.point.y * CityPicker.ratio - roadPoints[i].x , 2) + Mathf.Pow (c.point.x * CityPicker.ratio - roadPoints[i].z, 2));	
+				if (min==0 || r<min){
+					min=r;
+					v = new Vector2(roadPoints[i].z/CityPicker.ratio, roadPoints[i].x/CityPicker.ratio);
+				}
+			}
+		return v;
+
+	}
 }
 
 

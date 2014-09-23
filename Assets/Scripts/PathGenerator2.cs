@@ -107,7 +107,7 @@ public class PathGenerator2 : MonoBehaviour{
 	}
 	
 	private void createObject(Vector3[] newVertices, Vector2[] newUV, int[] newTriangles){
-		GameObject gameObject = new GameObject("Some Name Here");
+		GameObject gameObject = new GameObject("path");
 		
 		MeshFilter meshFilter = (MeshFilter) gameObject.AddComponent("MeshFilter");
 		MeshRenderer meshRenderer = (MeshRenderer) gameObject.AddComponent("MeshRenderer");

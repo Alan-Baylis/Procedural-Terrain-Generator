@@ -12,8 +12,10 @@ public class CityPicker : MonoBehaviour {
 	static float disp = 0.55f;
 	static int[] pq = {-1,-1,-1,1,1,-1,1,1};
 
-	static float heightMapSize, terrainSize;
-	static float ratio;
+	public static float heightMapSize, terrainSize;
+	public static float ratio;
+
+//	public static
 
 
 	public CityPicker(float heightMap, float terrain){
@@ -63,15 +65,34 @@ public class CityPicker : MonoBehaviour {
 		
 		if (checkMoisAndTemp (h))
 				if (h.elems.Count <= villageSize)
-						createVillage (h,object1);
+						h.roadPoints = createVillage (h,object1);
 				else if (h.elems.Count <= townSize)
-						createTown (h,object1, object2, object3);
-				else createMetro (h,object2, object3);
+						h.roadPoints = createTown (h,object1, object2, object3);
+				else h.roadPoints = createMetro (h,object2, object3);
 	}
 
+	static void draw(Vector3[] v){
+		
+		Vector3[] ve = new Vector3[4];
+		
+		for (int i=0; i<v.Length/4; i++) {
+			ve[0]=v[i*4];
+			ve[1]=v[i*4+1];
+			ve[2]=v[i*4+2];
+			ve[3]=v[i*4+3];
+			
+			for (int j = 0;j<3;j++)
+				Debug.DrawLine(ve[j], ve[j+1], Color.blue, 350.0f);
+			Debug.DrawLine(ve[3], ve[0], Color.blue, 350f);
+		}
+	}
 
-	public static void createVillage(Heads h,GameObject object1){
+	public static Vector3[] createVillage(Heads h,GameObject object1){
 		int numRows=3;
+
+		Vector3[] rPoints = new Vector3[h.elems.Count*4];
+		
+		int m = 0;
 
 		if (Mathf.Abs (h.c.west.x - h.c.east.x) < numRows * Field.tile)
 						numRows = 2;
@@ -94,29 +115,21 @@ public class CityPicker : MonoBehaviour {
 				}
 			}
 
-		}
-	}
+			rPoints[m++] = new Vector3((el.p.y - 1) * Field.tile * ratio-Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio-Field.tile*ratio/2);
+			rPoints[m++] = new Vector3((el.p.y - 1) * Field.tile * ratio-Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio+Field.tile*ratio/2);
+			rPoints[m++] = new Vector3((el.p.y - 1) * Field.tile * ratio+Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio+Field.tile*ratio/2);
+			rPoints[m++] = new Vector3((el.p.y - 1) * Field.tile * ratio+Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio-Field.tile*ratio/2);
 
-	static void draw(Vector3[] v){
 
-		Vector3[] ve = new Vector3[4];
-
-		for (int i=0; i<v.Length/4; i++) {
-			ve[0]=v[i*4];
-			ve[1]=v[i*4+1];
-			ve[2]=v[i*4+2];
-			ve[3]=v[i*4+3];
-
-			for (int j = 0;j<3;j++)
-				Debug.DrawLine(ve[j], ve[j+1], Color.blue, 350.0f);
-			Debug.DrawLine(ve[3], ve[0], Color.blue, 350f);
 		}
 
+		draw (rPoints);
 
-
+		return rPoints;
 	}
 
-	public static void createTown (Heads h, GameObject object1, GameObject object2, GameObject object3)
+
+	public static Vector3[] createTown (Heads h, GameObject object1, GameObject object2, GameObject object3)
 	{
 		Vector3[] rPoints = new Vector3[h.elems.Count*4];
 
@@ -128,7 +141,7 @@ public class CityPicker : MonoBehaviour {
 			GameObject c;
 			if (r > 2) {
 				for (int j=0;j<4;j++){
-					r = Random.Range (0, 14);
+					r = Random.Range (0, 12);
 					int p = pq[j*2];
 					int q = pq[j*2+1];
 					if (r<=10){
@@ -150,15 +163,18 @@ public class CityPicker : MonoBehaviour {
 			rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * ratio-Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio+Field.tile*ratio/2);
 			rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * ratio+Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio+Field.tile*ratio/2);
 			rPoints[i++] = new Vector3((el.p.y - 1) * Field.tile * ratio+Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio-Field.tile*ratio/2);
-			
+
+
 
 
 		}
 
 		draw (rPoints);
 
+		return rPoints;
+
 	}
-	public static void createMetro(Heads h,GameObject object2,GameObject object3){
+	public static Vector3[] createMetro(Heads h,GameObject object2,GameObject object3){
 
 		Vector3[] rPoints = new Vector3[h.elems.Count*4];
 		
@@ -169,7 +185,7 @@ public class CityPicker : MonoBehaviour {
 						GameObject c; 
 						if (r > 2) {
 							for (int j=0;j<4;j++){
-								r = Random.Range (0, 4);
+								r = Random.Range (0, 3);
 								int p = pq[j*2];
 								int q = pq[j*2+1];
 								if (r<=2){
@@ -195,6 +211,7 @@ public class CityPicker : MonoBehaviour {
 		}
 
 		draw (rPoints);
+		return rPoints;
 	}
 }
 
