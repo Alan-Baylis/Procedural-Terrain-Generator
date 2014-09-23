@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class PathGenerator2 : MonoBehaviour{
 	
 	public Texture2D texture;
+	public float height;
 	
 	private Terrain p_terrain;
 	public Terrain terrain{set{p_terrain = value;}}
@@ -35,8 +36,8 @@ public class PathGenerator2 : MonoBehaviour{
 
 		List<Vector2> points = new List<Vector2>();
 
-		points.Add (new Vector3 (p[0].x, getHeight (p[0].x, p[0].y), p[0].y));
-		points.Add (new Vector3 (p[1].x, getHeight (p[1].x, p[1].y), p[1].y));
+		points.Add (p[0]);
+		points.Add (p[1]);
 		
 		
 		for (int i=2; i< p.Count; i+=2){
@@ -44,9 +45,9 @@ public class PathGenerator2 : MonoBehaviour{
 			Vector2 midPoint = p[i-2] + p[i-1] + p[i] + p[i+1];
 			midPoint /= 4;
 			
-			points.Add (new Vector3 (midPoint.x, getHeight (midPoint.x, midPoint.y), midPoint.y));
-			points.Add (new Vector3 (p[i].x, getHeight (p[i].x, p[i].y), p[i].y));
-			points.Add (new Vector3 (p[i+1].x, getHeight (p[i+1].x, p[i+1].y), p[i+1].y));
+			points.Add (midPoint);
+			points.Add (p[i]);
+			points.Add (p[i+1]);
 		}
 
 		return points;
@@ -67,7 +68,7 @@ public class PathGenerator2 : MonoBehaviour{
 	}
 			
 	private float getHeight(float x, float y){
-		return Terrain.activeTerrain.SampleHeight(new Vector3(x,0,y))+0.4f;
+		return Terrain.activeTerrain.SampleHeight(new Vector3(x,0,y))+height;
 	}
 
 
@@ -79,7 +80,7 @@ public class PathGenerator2 : MonoBehaviour{
 						if (i % 3 == 2)
 								uv.Add (new Vector2 (0.5f, 0.5f));
 						else
-								uv.Add (new Vector2 (i % 6 / 3, i % 6 - 3));
+							uv.Add (new Vector2 ( i % 3, i % 6 / 3));
 
 		
 		return uv;	

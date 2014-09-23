@@ -251,8 +251,9 @@ public class Roads {
 							edgePoints[i].y *= (float)terrainSize / heightMapSize;
 						}
 
-						PathGenerator pathGenerator = new PathGenerator();
+						PathGenerator2 pathGenerator = new PathGenerator2();
 						pathGenerator.texture = roadTexture;
+						pathGenerator.height = 0.5f;
 						pathGenerator.generate (new List<Vector2>(edgePoints));
 						
 //						for (int ii=1; ii<edgePoints.Length; ii++) {

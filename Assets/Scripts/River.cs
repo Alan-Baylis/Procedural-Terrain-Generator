@@ -151,8 +151,9 @@ public class River : MonoBehaviour {
 			}
 
 
-			PathGenerator pathGenerator = new PathGenerator();
+			PathGenerator2 pathGenerator = new PathGenerator2();
 			pathGenerator.texture = riverTexture;
+			pathGenerator.height = 0.3f;
 			pathGenerator.generate (new List<Vector2>(edgePoints));
 
 

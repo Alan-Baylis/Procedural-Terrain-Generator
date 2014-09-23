@@ -105,7 +105,7 @@ public class Field {
 
 
 		newMat = htmap;
-		shift (newMat);
+		shift (newMat,waterLimit);
 		newMat=null;
 		fill ();
 		check (t,waterLimit);
@@ -192,7 +192,7 @@ public class Field {
 				}
 	}
 
-	static void shift(float[,] newMat){
+	static void shift(float[,] newMat,float waterlimit){
 		int size = (int)Mathf.Sqrt(newMat.Length);
 		int size1 = (int)Mathf.Sqrt(mat.Length)-2;
 
@@ -211,7 +211,7 @@ public class Field {
 					int t1=tile*j;
 					
 					while (n<tile && n+t1<size && b==false){
-						if (newMat[k+t, n+t1]<=0.1){ b=true; break;}
+						if (newMat[k+t, n+t1]<=waterlimit){ b=true; break;}
 						mat[i+1,j+1].height+=newMat[k+t, n+t1];
 						
 						mat[i+1,j+1].moisture+= getCenter[k+t,n+t1].moisture;
