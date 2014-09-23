@@ -14,14 +14,15 @@ public class CityPicker : MonoBehaviour {
 
 	public static float heightMapSize, terrainSize;
 	public static float ratio;
-
+	public static Texture2D roadTexture;
 //	public static
 
 
-	public CityPicker(float heightMap, float terrain){
+	public CityPicker(float heightMap, float terrain, Texture2D roadText){
 		heightMapSize = heightMap;
 		terrainSize = terrain;
 		ratio = terrainSize / heightMapSize;
+		roadTexture=roadText;
 	}
 
 
@@ -74,7 +75,10 @@ public class CityPicker : MonoBehaviour {
 	static void draw(Vector3[] v){
 		
 		Vector3[] ve = new Vector3[4];
-		
+		CityRoads CityRoad = new CityRoads ();
+		CityRoad.terrainSize = terrainSize;
+		CityRoad.heightMapSize = heightMapSize;
+		CityRoad.roadTexture = roadTexture;
 		for (int i=0; i<v.Length/4; i++) {
 			ve[0]=v[i*4];
 			ve[1]=v[i*4+1];
@@ -82,8 +86,12 @@ public class CityPicker : MonoBehaviour {
 			ve[3]=v[i*4+3];
 			
 			for (int j = 0;j<3;j++)
+			{
+				CityRoad.drawCityRoads(ve[j],ve[j+1]);
 				Debug.DrawLine(ve[j], ve[j+1], Color.blue, 350.0f);
+			}
 			Debug.DrawLine(ve[3], ve[0], Color.blue, 350f);
+			CityRoad.drawCityRoads(ve[3],ve[0]);
 		}
 	}
 

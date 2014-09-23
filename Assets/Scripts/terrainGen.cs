@@ -1050,7 +1050,7 @@ public class terrainGen : MonoBehaviour {
 
 	private void fillCities(){
 		Field.setCenters (getCenter);
-		Field.start (m_terrain, m_heightMapSize, htmap, object1, object2, object3, waterLimit);
+		Field.start (m_terrain, m_heightMapSize, htmap,road, object1, object2, object3, waterLimit);
 
 		foreach (GameObject house in GameObject.FindGameObjectsWithTag("house")) {
 				//house.transform.position += new Vector3 (-terrainSizeX / 2, 0, -terrainSizeY/2);

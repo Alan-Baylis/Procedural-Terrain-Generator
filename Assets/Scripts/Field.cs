@@ -97,7 +97,7 @@ public class Field {
 
 	static float angleLimit = 20;
 
-	public static void start(Terrain t, int tSize, float[,] htmap,GameObject object1,GameObject object2,GameObject object3,float waterLimit){
+	public static void start(Terrain t, int tSize, float[,] htmap, Texture2D roadTexture,GameObject object1,GameObject object2,GameObject object3,float waterLimit){
 
 		float[,] newMat = new float[tSize, tSize];
 
@@ -117,7 +117,7 @@ public class Field {
 		connectedComponents();
 
 
-		(new CityPicker (tSize, t.terrainData.size.x)).setFlags (cc,object1,object2,object3);
+		(new CityPicker (tSize, t.terrainData.size.x, roadTexture)).setFlags (cc,object1,object2,object3);
 
 	}
 
