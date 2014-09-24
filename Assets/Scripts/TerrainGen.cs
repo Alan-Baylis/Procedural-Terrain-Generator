@@ -1058,13 +1058,13 @@ public class TerrainGen : MonoBehaviour {
 
 		//not implemented
 		//List<Vector2> edgesMST = roadGen.mst;
-
+		DrawRoads drawRaod = new DrawRoads (m_terrainSize, m_heightMapSize, road);
 		for (int i =0; i< cityCenters.Count; i++)
 						for (int j=0; j< cityCenters.Count; j++) {
 							
 							if (roadPaths[i,j].length == -1 ) continue;
-
-
+							if(roadPaths[i,j].points.Count<2) continue;
+							drawRaod.createRoads(roadPaths[i,j].points);	
 							//@todo TASHA
 							//OVDE IMAS PUT roadPaths[i,j].points, I BRISI OVO SVE NA DOLE DO KRAJA FOR(j)-A, TO JE SVE DEBUG
 							//BEWARE , trenutno nigde ne pozivam Roads klasu inace, ovo gore je zakomentarisano kao sto vidis, i to obrisi :D
