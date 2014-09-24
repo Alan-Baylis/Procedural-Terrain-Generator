@@ -6,17 +6,18 @@ using System.Linq;
 using Delaunay;
 using Delaunay.Geo;
 
-public class terrainGen : MonoBehaviour {
+public class TerrainGen : MonoBehaviour {
 
 	public Texture2D road;
 	public Texture2D riverTexture;
+	public Path[,] roadPaths;
 
 	public int m_heightMapSize = 513; //Higher number will create more detailed height maps
 	public int m_alphaMapSize = 1024; //This is the control map that controls how the splat textures will be blended
 	
 	PerlinNoise m_groundNoise, m_mountainNoise, m_treeNoise, m_detailNoise;
 	
-	Terrain m_terrain;
+	public Terrain m_terrain;
 	
 	public Texture2D[] m_splats;
 	public Texture2D m_detail0, m_detail1, m_detail2;
@@ -87,7 +88,8 @@ public class terrainGen : MonoBehaviour {
 	private Voronoi voronoi;
 	
 	private PerlinNoise m_islandNoise;
-	
+	public List<Center> cityCenters = new List<Center>();
+
 	
 	// The Voronoi library generates multiple Point objects for
 	// corners, and we need to canonicalize to one Corner object.
@@ -298,12 +300,12 @@ public class terrainGen : MonoBehaviour {
 	
 
 
-
+		
+		fillCities ();
 
 		generateRivers ();
 		generateRoads ();
 
-		fillCities ();
 
 	}
 	
@@ -1040,17 +1042,52 @@ public class terrainGen : MonoBehaviour {
 		
 	}
 
+//	private void generateRoads(){
+//
+//		Roads roads = new Roads (this);
+//		roads.createRoads (this);
+//
+//		
+//	}
+
 	private void generateRoads(){
 
-		Roads roads = new Roads (this);
-		roads.createRoads (this);
+		RoadGenerator roadGen = new RoadGenerator (this);
+		roadGen.generate ();
+		roadPaths = roadGen.paths;
 
-		
+		List<Vector2> edgesMST = roadGen.mst;
+
+		for (int i =0; i< cityCenters.Count; i++)
+						for (int j=0; j< cityCenters.Count; j++) {
+							
+							if (roadPaths[i,j].length == -1 ) continue;
+
+							Color color = new Color(Random.Range(0.0f,1.0f),Random.Range(0.0f,1.0f),Random.Range(0.0f,1.0f));
+							
+							for(int h=1; h< roadPaths[i,j].points.Count; h++){
+
+								Vector3 start = new Vector3(roadPaths[i,j].points[h-1].x,0 ,roadPaths[i,j].points[h-1].y );
+								start.y = Terrain.activeTerrain.SampleHeight(start)+4.0f;
+
+								Vector3 end = new Vector3(roadPaths[i,j].points[h].x,0 ,roadPaths[i,j].points[h].y );
+								end.y = Terrain.activeTerrain.SampleHeight(end)+4.0f;
+				
+								Debug.DrawLine(start,end,color,1000.0f);
+
+
+							}
+					
+						}
+
+		foreach (Center c in cityCenters)
+			Debug.DrawLine (new Vector3 (c.point.x * m_terrainSize/m_heightMapSize, 0f, c.point.y* m_terrainSize/m_heightMapSize), new Vector3 (c.point.x* m_terrainSize/m_heightMapSize, 1000.0f, c.point.y* m_terrainSize/m_heightMapSize), Color.red, 1000.0f);
+
 	}
 
 	private void fillCities(){
 		Field.setCenters (getCenter);
-		Field.start (m_terrain, m_heightMapSize, htmap, object1, object2, object3, waterLimit);
+		cityCenters = Field.start (m_terrain, m_heightMapSize, htmap, object1, object2, object3, waterLimit);
 
 		foreach (GameObject house in GameObject.FindGameObjectsWithTag("house")) {
 				//house.transform.position += new Vector3 (-terrainSizeX / 2, 0, -terrainSizeY/2);
@@ -1062,6 +1099,7 @@ public class terrainGen : MonoBehaviour {
 		}
 
 	}
+
 }
 
 

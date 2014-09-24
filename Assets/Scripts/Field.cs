@@ -97,7 +97,7 @@ public class Field {
 
 	static float angleLimit = 20;
 
-	public static void start(Terrain t, int tSize, float[,] htmap,GameObject object1,GameObject object2,GameObject object3,float waterLimit){
+	public static List<Center> start(Terrain t, int tSize, float[,] htmap,GameObject object1,GameObject object2,GameObject object3,float waterLimit){
 
 		float[,] newMat = new float[tSize, tSize];
 
@@ -118,6 +118,26 @@ public class Field {
 
 
 		(new CityPicker (tSize, t.terrainData.size.x)).setFlags (cc,object1,object2,object3);
+
+		return getCityCenters (cc);
+
+	}
+
+	private static List<Center> getCityCenters(List<Heads> listHeads){
+
+		List<Center> cityCenters = new List<Center> ();
+
+		foreach(Heads head in listHeads){
+			Vector2 midPoint = new Vector2(0,0);
+			midPoint += new Vector2(head.c.north.x, head.c.north.y);
+			midPoint += new Vector2(head.c.south.x, head.c.south.y);
+			midPoint += new Vector2(head.c.east.x, head.c.east.y);
+			midPoint += new Vector2(head.c.west.x, head.c.west.y);
+			midPoint /= 4;
+			midPoint *= tile;
+			cityCenters.Add(getCenter[(int)midPoint.y, (int)midPoint.x]);
+			}
+		return cityCenters;
 
 	}
 

@@ -10,7 +10,7 @@ public class Roads {
 	public List<Edge>[] roadConnection;// center index -> array of Edges with roads
 	public Texture2D roadTexture;
 	//public terrainGen map;
-	public Roads(terrainGen map) {
+	public Roads(TerrainGen map) {
 	//	this.map = map;
 		road = new int[map.edges.Count]; 
 		roadConnection = new List<Edge>[map.centers.Count]; 
@@ -21,7 +21,7 @@ public class Roads {
 	
 	// We want to mark different elevation zones so that we can draw
 	// island-circling roads that divide the areas.
-	public void createRoads(terrainGen map) {
+	public void createRoads(TerrainGen map) {
 				// Oceans and coastal polygons are the lowest contour zone
 				// (1). Anything connected to contour level K, if it's below
 				// elevation threshold K, or if it's water, gets contour level
