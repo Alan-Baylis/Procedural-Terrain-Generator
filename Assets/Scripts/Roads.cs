@@ -109,8 +109,6 @@ public class Roads {
 
 
 
-
-
 										//Debug.Log(" "+edge.index);
 										if (road [edge.index] < a)
 												a = road [edge.index];
@@ -191,7 +189,7 @@ public class Roads {
 										//Debug.Log (oneRoad.Count);
 
 								}
-								Generate(oneRoad.ToArray(),5-hr,0.5f);
+								Generate(oneRoad.ToArray(),5-hr,0.3f);
 						}
 				}
 		}	
@@ -259,16 +257,6 @@ public class Roads {
 			splinePoints.Add (points [points.Length - 2]);
 			
 			Vector2[] edgePoints = edgePointsOnCurve (splinePoints.ToArray (), volume);
-			//														Vector2[]edgePoints=new Vector2[splinePoints.Count];
-			//											for (int i=0; i<splinePoints.Count;i++)
-			//											{
-			//												edgePoints[i]=splinePoints[i];
-			//											}
-			//						Vector2[]edgePoints=new Vector2[points.Length];
-			//						for (int ii=0; ii<points.Length;ii++)
-			//						{
-			//							edgePoints[ii]=points[ii];
-			//						}
 			
 			for (int i=0; i<edgePoints.Length; i++){
 				edgePoints[i].x  *= (float)terrainSize / heightMapSize;
@@ -293,8 +281,7 @@ public class Roads {
 		
 	}
 	//kordinate za proveru puteva
-
-
+	
 
 	public bool inElem(Elem e, Center c){
 
@@ -342,6 +329,7 @@ public class Roads {
 		return v;
 
 	}
+
 }
 
 

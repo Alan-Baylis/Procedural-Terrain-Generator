@@ -26,10 +26,13 @@ public class River : MonoBehaviour {
 					spp.volume =1;
 					oneriver.Add (spp);
 					nq=q;
-					while (nq.elevation>=waterlimit-0.01f && !rivermade[nq.index]) {
+					while (nq.elevation>=waterlimit-0.02f && !rivermade[nq.index]) {
 						Spline spl = new Spline ();
 						spl.point = nq.point;
-						spl.volume = nq.river;
+						if (nq.coast==true)
+							spl.volume=oneriver[oneriver.Count-1].volume;
+						else
+							spl.volume = nq.river;
 						oneriver.Add (spl);
 						rivermade[nq.index]=true;
 						nq = nq.downslope;
@@ -82,7 +85,7 @@ public class River : MonoBehaviour {
 	{
 		Vector2[] EdgePoints = new Vector2[SplinePoints.Length*2];	
 		for (int i=1; i<SplinePoints.Length; i++) {
-			Vector2[] p=calculateEdgePoints(SplinePoints[i-1].point,SplinePoints[i].point,SplinePoints[i-1].volume*0.01f);
+			Vector2[] p=calculateEdgePoints(SplinePoints[i-1].point,SplinePoints[i].point,SplinePoints[i-1].volume*0.015f);
 			EdgePoints[2*i-2]=p[0];
 			EdgePoints[2*i-1]=p[1];
 		}
