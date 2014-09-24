@@ -15,7 +15,6 @@ public class Path{
 public class RoadGenerator {
 
 	public Path[,] paths;
-	public List<Vector2> mst;
 
 	private List<Center> centers;
 

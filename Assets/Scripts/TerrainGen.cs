@@ -1056,12 +1056,19 @@ public class TerrainGen : MonoBehaviour {
 		roadGen.generate ();
 		roadPaths = roadGen.paths;
 
-		List<Vector2> edgesMST = roadGen.mst;
+		//not implemented
+		//List<Vector2> edgesMST = roadGen.mst;
 
 		for (int i =0; i< cityCenters.Count; i++)
 						for (int j=0; j< cityCenters.Count; j++) {
 							
 							if (roadPaths[i,j].length == -1 ) continue;
+
+
+							//@todo TASHA
+							//OVDE IMAS PUT roadPaths[i,j].points, I BRISI OVO SVE NA DOLE DO KRAJA FOR(j)-A, TO JE SVE DEBUG
+							//BEWARE , trenutno nigde ne pozivam Roads klasu inace, ovo gore je zakomentarisano kao sto vidis, i to obrisi :D
+							//GOOD LUCK , MY FELLOW PROGRAMMER !
 
 							Color color = new Color(Random.Range(0.0f,1.0f),Random.Range(0.0f,1.0f),Random.Range(0.0f,1.0f));
 							
