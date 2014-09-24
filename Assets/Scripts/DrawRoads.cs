@@ -78,16 +78,16 @@ public class DrawRoads : MonoBehaviour {
 		Heads h;
 		for (int i=1; i<roadp.Count; i++) {
 
-			if ((h = inTown (Field.cc, roadp [i - 1])) != null) {Debug.Log ("llll");
+			if ((h = inTown (Field.cc, roadp [i - 1])) != null) {
 
 				if ((h = inTown (Field.cc, roadp [i])) == null)
-						oneRoad.Add (change (h.roadPoints, roadp [i - 1]));
+						oneRoad.Add (roadp [i - 1]);
 			}
 			else
 			{
 				if ((h = inTown (Field.cc, roadp[i])) != null){
 					oneRoad.Add(roadp[i-1]);
-					oneRoad.Add (change (h.roadPoints, roadp [i]));
+					oneRoad.Add (roadp [i]);
 					if (oneRoad.Count>1){
 						Vector2 start = new Vector2 (2 * oneRoad[0].x - oneRoad [1].x, 2 * oneRoad [0].y - oneRoad [1].y);
 						Vector2 end = new Vector2 (2 * oneRoad[oneRoad.Count - 1].x - oneRoad [oneRoad.Count - 2].x, 2 * oneRoad [oneRoad.Count - 1].y - oneRoad [oneRoad.Count - 2].y);
@@ -103,7 +103,7 @@ public class DrawRoads : MonoBehaviour {
 		}
 		if (oneRoad.Count >0) {
 			if ((h = inTown (Field.cc, roadp[roadp.Count-1])) != null)
-				oneRoad.Add (change (h.roadPoints, roadp [roadp.Count-1]));
+				oneRoad.Add (roadp [roadp.Count-1]);
 			else
 				oneRoad.Add(roadp[roadp.Count-1]);
 
@@ -179,7 +179,7 @@ public class DrawRoads : MonoBehaviour {
 	}
 	public bool inElem(Elem e, Vector2 c){
 		
-		float limit = Field.tile;
+		float limit = Field.tile*CityPicker.ratio;
 		
 		for (int i=0;i<limit;i++){
 			for (int j=0;j<limit;j++){
@@ -196,8 +196,7 @@ public class DrawRoads : MonoBehaviour {
 	}
 	
 	public Heads inTown(List<Heads> l, Vector2 c){
-		
-		
+
 		foreach (Heads h in l){
 			foreach(Elem e in h.elems){
 				if (inElem(e,c)){
