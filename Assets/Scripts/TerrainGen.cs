@@ -749,8 +749,11 @@ public class TerrainGen : MonoBehaviour {
 
 		int k=0;
 		for (int i = 0; i <corners.Count/2; i++) {
+		//for (int i=0;i<8;i++){
+
 			Corner q = corners[Random.Range(0, corners.Count-1)];
 			if (q.ocean || q.elevation<waterLimit || q.elevation > 0.9f) continue;
+			//if (q.ocean || q.elevation<0.3f || q.elevation > 0.9f) {i--;continue;}
 			// Bias rivers to go west: if (q.downslope.x > q.x) continue;
 			while (!q.coast ) {
 				if (q == q.downslope) {
@@ -1029,6 +1032,16 @@ public class TerrainGen : MonoBehaviour {
 						for (int j=i+1; j< cityCenters.Count; j++) {						
 							if (roadPaths[i,j].length == -1 ) continue;
 							if(roadPaths[i,j].points.Count<2) continue;
+
+							bool skip = false;
+							for (int h=0; h< cityCenters.Count; h++){
+								if ( h==i || h==j) continue;
+
+								if (roadPaths[i,j].length >= 0.7f*(roadPaths[i,h].length + roadPaths[h,j].length) ) skip =true;
+							}
+
+							if (skip) continue;
+
 							drawRaod.createRoads(roadPaths[i,j].points);	
 					
 						}
