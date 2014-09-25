@@ -1051,25 +1051,69 @@ public class TerrainGen : MonoBehaviour {
 	}
 	void OnGUI(){
 		switch(counter){
-		case 0: GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30),  "CLICK THE MOUSE TO GENERATE TERRAIN AND TEXTURE"); break; //pravljenje terena i tekstura
-		case 1:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "CLICK THE MOUSE TO GENERATE RIVERS");break;				 //reke
-		case 2:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "CLICK THE MOUSE TO GENERATE VEGETATION");break;			 //vegetacija
-		case 3:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "CLICK THE MOUSE TO GENERATE CITIES");break;	 //gradovi
-		case 4:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "CLICK THE MOUSE TO GENERATE ROADS");break;	 //putevi
+		case 0: GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30),  "PRESS SPACE TO GENERATE TERRAIN AND TEXTURE"); break; //pravljenje terena i tekstura
+		case 1:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "PRESS SPACE TO GENERATE RIVERS");break;				 //reke
+		case 2:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "PRESS SPACE TO GENERATE VEGETATION");break;			 //vegetacija
+		case 3:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "PRESS SPACE TO GENERATE CITIES");break;	 //gradovi
+		case 4:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "PRESS SPACE TO GENERATE ROADS");break;	 //putevi
 		}
 	}
 	int counter = 0;
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetMouseButtonDown (0)) {
-			switch(counter){
-			case 0: createTerrain(); break;    //pravljenje terena i tekstura
-			case 1: generateRivers(); break;   //reke
-			case 2: createVegetation();break;  //vegetacija
-			case 3: createCities(); break; 	//gradovi
-			case 4:	generateRoads(); break;      //putevi
+		if (Input.GetKeyDown (KeyCode.Space)) {
+						switch (counter) {
+						case 0:
+								createTerrain ();
+								break;    //pravljenje terena i tekstura
+						case 1:
+								generateRivers ();
+								break;   //reke
+						case 2:
+								createVegetation ();
+								break;  //vegetacija
+						case 3:
+								createCities ();
+								break; 	//gradovi
+						case 4:
+								generateRoads ();
+								break;      //putevi
+						}
+						++counter;
+				}
+		else if (Input.GetKeyDown (KeyCode.F1)) {
+			switch (counter) {
+			case 0:
+				createTerrain ();
+				generateRivers ();
+				createVegetation ();
+				createCities ();
+				generateRoads ();
+				counter = 5;
+				break;
+			case 1:
+				generateRivers ();
+				createVegetation ();
+				createCities ();
+				generateRoads ();
+				counter = 5;
+				break;
+			case 2:
+				createVegetation ();
+				createCities ();
+				generateRoads ();
+				counter = 5;
+				break;
+			case 3:
+				createCities ();
+				generateRoads ();
+				counter = 5;
+				break;
+			case 4:
+				generateRoads ();
+				counter = 5;
+				break;
 			}
-			++counter;
 		}
 	}
 
