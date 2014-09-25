@@ -86,11 +86,7 @@ public class CityPicker : MonoBehaviour {
 			ve[3]=v[i*4+3];
 			
 			for (int j = 0;j<3;j++)
-			{
 				CityRoad.drawCityRoads(ve[j],ve[j+1]);
-				Debug.DrawLine(ve[j], ve[j+1], Color.blue, 350.0f);
-			}
-			Debug.DrawLine(ve[3], ve[0], Color.blue, 350f);
 			CityRoad.drawCityRoads(ve[3],ve[0]);
 		}
 	}

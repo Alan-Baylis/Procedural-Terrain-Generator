@@ -135,7 +135,7 @@ public class Field {
 			midPoint += new Vector2(head.c.west.x, head.c.west.y);
 			midPoint /= 4;
 			midPoint *= tile;
-			midPoint -= new Vector2(0.5f,0.5f);
+			midPoint -= new Vector2(Field.tile,Field.tile);
 			cityCenters.Add(getCenter[(int)midPoint.y, (int)midPoint.x]);
 			}
 		return cityCenters;

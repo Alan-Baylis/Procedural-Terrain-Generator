@@ -8,25 +8,23 @@ public class VectorSet{
 	public Vector2 b{ get; set; }
 	public VectorSet(Vector2 aa, Vector2 bb)
 	{
-				a = aa;
-				b = bb;
-		}
+		a = aa;
+		b = bb;
+	}
 }
 public class DrawRoads : MonoBehaviour {
 	public float terrainSize;
 	public float heightMapSize;
 	public Texture2D roadTexture;
 	public List<VectorSet> used;
+	Elem towncenter;
 	public DrawRoads(float ts, float hms, Texture2D text) {
 		terrainSize = ts;
 		heightMapSize = hms;
 		roadTexture = text;
 		used=new List<VectorSet>();
-		used.Add (new VectorSet( new Vector2 (0f, 0f), new Vector2 (0f, 0f)));
-	
 	}
-
-
+	
 	public Vector2[] calculateEdgePoints(Vector2 a, Vector2 b, float dist)
 	{
 		float dx = b.x - a.x;
@@ -75,25 +73,30 @@ public class DrawRoads : MonoBehaviour {
 	}
 	public void createRoads(List<Vector2> roadp) {
 		List<Vector2> oneRoad = new List<Vector2> ();
-		Heads h;
+		Elem h,p;
+
 		for (int i=1; i<roadp.Count; i++) {
 
 			if ((h = inTown (Field.cc, roadp [i - 1])) != null) {
+				if ((p = inTown (Field.cc, roadp [i])) == null)
+				{
+					oneRoad=new List<Vector2>();
+					oneRoad.Add (change(roadp [i],h));
+				}
 
-				if ((h = inTown (Field.cc, roadp [i])) == null)
-						oneRoad.Add (roadp [i - 1]);
 			}
 			else
 			{
-				if ((h = inTown (Field.cc, roadp[i])) != null){
+				if ((p = inTown (Field.cc, roadp[i])) != null){
 					oneRoad.Add(roadp[i-1]);
-					oneRoad.Add (roadp [i]);
+					oneRoad.Add (change(roadp [i-1],p));
 					if (oneRoad.Count>1){
 						Vector2 start = new Vector2 (2 * oneRoad[0].x - oneRoad [1].x, 2 * oneRoad [0].y - oneRoad [1].y);
 						Vector2 end = new Vector2 (2 * oneRoad[oneRoad.Count - 1].x - oneRoad [oneRoad.Count - 2].x, 2 * oneRoad [oneRoad.Count - 1].y - oneRoad [oneRoad.Count - 2].y);
 						oneRoad.Add (end);
 						oneRoad.Insert (0, start);
 						generate(oneRoad);
+						oneRoad=new List<Vector2>();
 					}
 
 				}
@@ -103,7 +106,7 @@ public class DrawRoads : MonoBehaviour {
 		}
 		if (oneRoad.Count >0) {
 			if ((h = inTown (Field.cc, roadp[roadp.Count-1])) != null)
-				oneRoad.Add (roadp [roadp.Count-1]);
+				oneRoad.Add (change(roadp [roadp.Count-2],h));
 			else
 				oneRoad.Add(roadp[roadp.Count-1]);
 
@@ -162,67 +165,56 @@ public class DrawRoads : MonoBehaviour {
 			splinePoints.Add (points [points.Length - 2]);
 			
 			Vector2[] edgePoints = edgePointsOnCurve (splinePoints.ToArray (), volume);
-
-//			for (int i=0; i<edgePoints.Length; i++){
-//				edgePoints[i].x  *= (float)terrainSize / heightMapSize;
-//				edgePoints[i].y *= (float)terrainSize / heightMapSize;
-//			}
 			
 			PathGenerator2 pathGenerator = new PathGenerator2();
 			pathGenerator.texture = roadTexture;
 			pathGenerator.height = 0.5f;
 			pathGenerator.generate (new List<Vector2>(edgePoints));
-			
-			
 		}
 
 	}
-	public bool inElem(Elem e, Vector2 c){
+	public Elem inElem(Elem e, Vector2 c){
 		
 		float limit = Field.tile*CityPicker.ratio;
-		
-		for (int i=0;i<limit;i++){
-			for (int j=0;j<limit;j++){
-				
-				float x = e.p.y*limit - (i + limit/2);
-				float y = e.p.x*limit - (j + limit/2);
-				
-				if (c.y==x && c.x==y)
-					return true;
-			}
-		}
-		
-		return false;
+		float xx = (e.p.y - 1) * limit;
+		float yy = (e.p.x - 1) * limit;
+		if (c.x >= xx - limit / 2f && c.x <= xx + limit / 2f && c.y >= yy - limit / 2f && c.y <= yy + limit / 2f)
+						return e;
+		return null;
 	}
 	
-	public Heads inTown(List<Heads> l, Vector2 c){
+	public Elem inTown(List<Heads> l, Vector2 c){
 
 		foreach (Heads h in l){
 			foreach(Elem e in h.elems){
-				if (inElem(e,c)){
-					return h;
+				Elem p=inElem(e,c);
+				if (p!=null){
+					return p;
 				}
 			}
 		}
 		return null;
 	}
 	
-	public Vector2 change(Vector3[] roadPoints, Vector2 c){
-		float min = 0;
-		Vector2 v = Vector2.zero;
-		
-		if (roadPoints != null)
-		for (int i=0;i<roadPoints.Length;i++){
-			float r = Mathf.Sqrt(Mathf.Pow (c.y - roadPoints[i].x , 2) + Mathf.Pow (c.x - roadPoints[i].z, 2));	
-			if (min==0 || r<min){
-				min=r;
-				v = new Vector2(roadPoints[i].z, roadPoints[i].x);
-			}
-		}
+	public Vector2 change(Vector2 c, Elem e){
+		float limit = Field.tile*CityPicker.ratio;
+		float xx = (e.p.y - 1) * limit;
+		float yy = (e.p.x - 1) * limit;
+		Vector2 v = new Vector2 (c.x,c.y);
+		if (v.x < xx - limit / 2f)
+						v.x = xx - limit / 2f;
+		else
+			if (v.x > xx + limit / 2f)
+				v.x = xx + limit / 2f;
+		if (v.y < yy- limit / 2f)
+			v.y = yy - limit / 2f;
+		else
+			if (v.y > yy + limit / 2f)
+				v.y = yy + limit / 2f;
 		return v;
 		
 	}
 		
-	}
+}
 	
 	

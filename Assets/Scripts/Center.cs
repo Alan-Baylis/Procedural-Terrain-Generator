@@ -36,17 +36,17 @@ public class Center {
 			return BiomeTypes.LAKE;
 		} else if (this.coast) {
 			return BiomeTypes.BEACH;
-		} else if (this.elevation > 0.85f) return BiomeTypes.ICE;
+		} else if (this.elevation > 0.8f) return BiomeTypes.ICE;
 		 else if (this.elevation > 0.7f) {
 			if (this.moisture > 0.5f) return BiomeTypes.SNOW;
 			else if (this.moisture > 0.4f) return BiomeTypes.TUNDRA;
 			else if (this.moisture > 0.2f) return BiomeTypes.BARE;
 			else return BiomeTypes.SCORCHED;
-		} else if (this.elevation > 0.68f) {
+		} else if (this.elevation > 0.6f) {
 			if (this.moisture > 0.76f) return BiomeTypes.TAIGA;
 			else  return BiomeTypes.SHRUBLAND;
 			//else return BiomeTypes.SUBTROPICAL_DESERT;
-		} else if (this.elevation > 0.5f) {
+		} else if (this.elevation > 0.3f) {
 			if (this.moisture > 0.50f) return BiomeTypes.TEMPERATE_RAIN_FOREST;
 			else  return BiomeTypes.GRASSLAND;}
 			//else return BiomeTypes.SUBTROPICAL_DESERT;

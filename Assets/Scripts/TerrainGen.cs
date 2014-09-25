@@ -108,11 +108,10 @@ public class TerrainGen : MonoBehaviour {
 	
 	Center[,] getCenter;
 	float[,] htmap;
-	
-	
+
 	
 	// Use this for initialization
-	void Start () {
+	void createTerrain () {
 
 		TerrainData terrainData = new TerrainData();
 		
@@ -285,35 +284,20 @@ public class TerrainGen : MonoBehaviour {
 		
 		
 
-		m_terrain.transform.position = new Vector3(0, 0, 0); // zasto?
+		m_terrain.transform.position = new Vector3(0, 0, 0); 
 		
 		
 		
 		//disable this for better frame rate
 		m_terrain.castShadows = false;
-		
-		//FillTreeInstances (m_terrain,htmap);
-		
-		FillTreeInstancesBiomes (m_terrain);
-		FillDetailMap (m_terrain); // vegetacija
-
-	
-
 
 		
-		fillCities ();
 
-		generateRivers ();
-		generateRoads ();
 
 
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-	
+
+
 	private void fillCenters(){
 		
 		for (int i=0; i <m_heightMapSize; i++)
@@ -387,14 +371,14 @@ public class TerrainGen : MonoBehaviour {
 			if (tree<10)
 				{
 
-					if(frac < 0.5f && fracHeight> waterLimit+0.05f && Random.Range(0,m_treeSpacing[tree]) == 0) //make sure tree are not on steep slopes & in the sea
+					if(frac < 0.5f && fracHeight> waterLimit+0.005f && Random.Range(0,m_treeSpacing[tree]) == 0) //make sure tree are not on steep slopes & in the sea
 				{
 					float worldPosX = x+(m_terrainSize-1);
 					float worldPosZ = z+(m_terrainSize-1);
 					
 					float noise = m_treeNoise.FractalNoise2D(worldPosX, worldPosZ, 3, m_treeFrq, 1.0f);
 					float ht = terrain.terrainData.GetInterpolatedHeight(normX, normZ);
-					
+	
 					if( noise > 0 && ht < m_terrainHeight*0.4f )
 					{
 						
@@ -405,7 +389,8 @@ public class TerrainGen : MonoBehaviour {
 						temp.heightScale = 1;
 						temp.color = Color.white;
 						temp.lightmapColor = Color.white;
-						
+//						if (tree==0)
+//								Debug.DrawLine(new Vector3(x,0f,z), new Vector3(x,100f,z),Color.red,2600f);
 						terrain.AddTreeInstance(temp);
 					}
 				}
@@ -484,9 +469,9 @@ public class TerrainGen : MonoBehaviour {
 				Center.BiomeTypes biome = getCenter[(int)(x*ratio),(int)(z*ratio)].biome;
 				
 				for (int i=0; i< 15;i++)
-					map[x,z,i]= 0;
+					map[z,x,i]= 0;
 				
-				map[x,z,(int)biome]=1;
+				map[z,x,(int)biome]=1;
 			}
 		}
 		
@@ -663,10 +648,11 @@ public class TerrainGen : MonoBehaviour {
 			int  numOcean = 0;
 			int  numLand = 0;
 			foreach (Center r in p.neighbors) {
-				numOcean += (r.ocean)?1:0;
+				numOcean += (r.water)?1:0;
 				numLand += (!r.water)?1:0;
 			}
 			p.coast = (numOcean > 0) && (numLand > 0);
+
 		}
 		
 		
@@ -830,8 +816,6 @@ public class TerrainGen : MonoBehaviour {
 				sumMoisture += q.moisture;
 			}
 			p.moisture = sumMoisture / p.corners.Count;
-			
-			//			if (p.elevation>0.7f) Debug.Log (p.moisture);
 		}
 		
 	}
@@ -1016,9 +1000,6 @@ public class TerrainGen : MonoBehaviour {
 	}
 
 	private void generateRivers(){
-//		
-//		RiverGenerator riverGenerator = new RiverGenerator ();
-//		List<Vector2> p = new List<Vector2> ();
 
 		River river = new River ();
 		river.riverTexture = riverTexture;
@@ -1026,19 +1007,6 @@ public class TerrainGen : MonoBehaviour {
 		river.heightMapSize = m_heightMapSize;
 		river.waterlimit = waterLimit;
 		river.drawRivers (corners);
-
-//		p.Add (new Vector2 (1,1));
-//		p.Add (new Vector2 (1,2));
-//		p.Add (new Vector2 (2,1));
-//		p.Add (new Vector2 (2,2));
-//		p.Add (new Vector2 (3,1));
-//		p.Add (new Vector2 (3,2));
-//		p.Add (new Vector2 (5,1));
-//		p.Add (new Vector2 (5,4));
-		
-//		riverGenerator.road = road;
-//		
-//		riverGenerator.generate (new List<Vector2>(riverPoints));
 		
 	}
 
@@ -1056,43 +1024,18 @@ public class TerrainGen : MonoBehaviour {
 		roadGen.generate ();
 		roadPaths = roadGen.paths;
 
-		//not implemented
-		//List<Vector2> edgesMST = roadGen.mst;
 		DrawRoads drawRaod = new DrawRoads (m_terrainSize, m_heightMapSize, road);
 		for (int i =0; i< cityCenters.Count; i++)
-						for (int j=0; j< cityCenters.Count; j++) {
-							
+						for (int j=i+1; j< cityCenters.Count; j++) {						
 							if (roadPaths[i,j].length == -1 ) continue;
 							if(roadPaths[i,j].points.Count<2) continue;
 							drawRaod.createRoads(roadPaths[i,j].points);	
-							//@todo TASHA
-							//OVDE IMAS PUT roadPaths[i,j].points, I BRISI OVO SVE NA DOLE DO KRAJA FOR(j)-A, TO JE SVE DEBUG
-							//BEWARE , trenutno nigde ne pozivam Roads klasu inace, ovo gore je zakomentarisano kao sto vidis, i to obrisi :D
-							//GOOD LUCK , MY FELLOW PROGRAMMER !
-
-							Color color = new Color(Random.Range(0.0f,1.0f),Random.Range(0.0f,1.0f),Random.Range(0.0f,1.0f));
-							
-							for(int h=1; h< roadPaths[i,j].points.Count; h++){
-
-								Vector3 start = new Vector3(roadPaths[i,j].points[h-1].x,0 ,roadPaths[i,j].points[h-1].y );
-								start.y = Terrain.activeTerrain.SampleHeight(start)+4.0f;
-
-								Vector3 end = new Vector3(roadPaths[i,j].points[h].x,0 ,roadPaths[i,j].points[h].y );
-								end.y = Terrain.activeTerrain.SampleHeight(end)+4.0f;
-				
-								Debug.DrawLine(start,end,color,1000.0f);
-
-
-							}
 					
 						}
-
-		foreach (Center c in cityCenters)
-			Debug.DrawLine (new Vector3 (c.point.x * m_terrainSize/m_heightMapSize, 0f, c.point.y* m_terrainSize/m_heightMapSize), new Vector3 (c.point.x* m_terrainSize/m_heightMapSize, 1000.0f, c.point.y* m_terrainSize/m_heightMapSize), Color.red, 1000.0f);
-
 	}
 
-	private void fillCities(){
+	private void createCities(){
+		generateRoads ();
 		Field.setCenters (getCenter);
 		cityCenters = Field.start (m_terrain, m_heightMapSize, htmap,road, object1, object2, object3, waterLimit);
 
@@ -1106,6 +1049,35 @@ public class TerrainGen : MonoBehaviour {
 		}
 
 	}
+	void OnGUI(){
+		switch(counter){
+		case 0: GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30),  "CLICK THE MOUSE TO GENERATE TERRAIN AND TEXTURE"); break; //pravljenje terena i tekstura
+		case 1:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "CLICK THE MOUSE TO GENERATE RIVERS");break;				 //reke
+		case 2:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "CLICK THE MOUSE TO GENERATE VEGETATION");break;			 //vegetacija
+		case 3:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "CLICK THE MOUSE TO GENERATE CITIES");break;	 //gradovi
+		case 4:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "CLICK THE MOUSE TO GENERATE ROADS");break;	 //putevi
+		}
+	}
+	int counter = 0;
+	// Update is called once per frame
+	void Update () {
+		if (Input.GetMouseButtonDown (0)) {
+			switch(counter){
+			case 0: createTerrain(); break;    //pravljenje terena i tekstura
+			case 1: generateRivers(); break;   //reke
+			case 2: createVegetation();break;  //vegetacija
+			case 3: createCities(); break; 	//gradovi
+			case 4:	generateRoads(); break;      //putevi
+			}
+			++counter;
+		}
+	}
+
+	void createVegetation(){
+		FillTreeInstancesBiomes (m_terrain);
+		FillDetailMap (m_terrain); // vegetacija
+	}
+
 
 }
 
