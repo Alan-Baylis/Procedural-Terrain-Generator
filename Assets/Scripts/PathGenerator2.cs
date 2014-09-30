@@ -121,6 +121,10 @@ public class PathGenerator2 : MonoBehaviour{
 		mesh.Optimize();
 		
 		meshRenderer.material.mainTexture = texture;
+
+		MeshCollider meshc = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
+		
+		meshc.sharedMesh = mesh; // Give it your mesh here.
 	}
 			
 }

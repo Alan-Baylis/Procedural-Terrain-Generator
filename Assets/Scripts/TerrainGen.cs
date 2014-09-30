@@ -151,7 +151,7 @@ public class TerrainGen : MonoBehaviour {
 		getCenter = new Center[m_heightMapSize,m_heightMapSize]; 
 		
 		m_terrain = new Terrain();
-		
+
 		
 		for (int i= 0; i < m_splats.Length ; i++) {
 			
@@ -200,6 +200,8 @@ public class TerrainGen : MonoBehaviour {
 		terrainData.treePrototypes = m_treeProtoTypes.ToArray();
 		terrainData.detailPrototypes = m_detailProtoTypes;
 		m_terrain = Terrain.CreateTerrainGameObject(terrainData).GetComponent<Terrain>();
+
+		m_terrain.tag = "ground";
 
 		FillHeights(htmap); // ovde je terren
 
@@ -381,7 +383,15 @@ public class TerrainGen : MonoBehaviour {
 	
 					if( noise > 0 && ht < m_terrainHeight*0.4f )
 					{
+						RaycastHit hit;
+						Physics.Raycast(new Vector3(normX * m_terrainSize, 10000.0f, normZ*m_terrainSize), -Vector3.up, out hit);
 						
+							if ( ! hit.transform.gameObject.CompareTag("ground")){
+								//Debug.Log("yeeeey");
+								//Debug.Log(hit.transform.gameObject.name);
+								continue;
+							}
+
 						TreeInstance temp = new TreeInstance();
 						temp.position = new Vector3(normX,ht,normZ);
 						temp.prototypeIndex = tree;
@@ -1083,14 +1093,14 @@ public class TerrainGen : MonoBehaviour {
 								generateRivers ();
 								break;   //reke
 						case 2:
-								createVegetation ();
-								break;  //vegetacija
-						case 3:
 								createCities ();
 								break; 	//gradovi
-						case 4:
+						case 3:
 								generateRoads ();
-								break;      //putevi
+							break;      //putevi
+						case 4:
+							createVegetation ();
+							break;  //vegetacija
 						}
 						++counter;
 				}
@@ -1099,31 +1109,31 @@ public class TerrainGen : MonoBehaviour {
 			case 0:
 				createTerrain ();
 				generateRivers ();
-				createVegetation ();
 				createCities ();
 				generateRoads ();
+				createVegetation ();
 				counter = 5;
 				break;
 			case 1:
 				generateRivers ();
-				createVegetation ();
 				createCities ();
 				generateRoads ();
+				createVegetation ();
 				counter = 5;
 				break;
 			case 2:
-				createVegetation ();
 				createCities ();
 				generateRoads ();
+				createVegetation ();
 				counter = 5;
 				break;
 			case 3:
-				createCities ();
 				generateRoads ();
+				createVegetation ();
 				counter = 5;
 				break;
 			case 4:
-				generateRoads ();
+				createVegetation ();
 				counter = 5;
 				break;
 			}
