@@ -141,6 +141,8 @@ public class CityPicker : MonoBehaviour {
 
 		foreach (Elem el in h.elems) {
 
+
+
 			int r = Random.Range (3, 11);
 			GameObject c;
 			if (r > 2) {
@@ -148,16 +150,16 @@ public class CityPicker : MonoBehaviour {
 					r = Random.Range (0, 12);
 					int p = pq[j*2];
 					int q = pq[j*2+1];
-					if (r<10){
-						if (r <= 2)
-							c = (GameObject)Instantiate (object1, new Vector3 ((el.p.y - 1 - 0.25f*p) * Field.tile * ratio, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1 - 0.25f*q) * Field.tile * ratio), Quaternion.identity);
-						else if (r <= 4)
-							c = (GameObject)Instantiate (object3, new Vector3 ((el.p.y - 1 - 0.25f*p) * Field.tile * ratio, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1 - 0.25f*q) * Field.tile * ratio), Quaternion.identity);
-						else
-							c = (GameObject)Instantiate (object2, new Vector3 ((el.p.y - 1 - 0.25f*p) * Field.tile * ratio, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1 - 0.25f*q) * Field.tile * ratio), Quaternion.identity);
-
-						c.transform.position = new Vector3 (c.transform.position.x, (float)(c.transform.position.y + disp * c.transform.localScale.y / 2-5), c.transform.position.z);
-						c.transform.eulerAngles = new Vector3 (c.transform.rotation.x, Random.Range (0, 360), c.transform.rotation.z);
+					if (r<10){				
+							if (r <= 2)
+								c = (GameObject)Instantiate (object1, new Vector3 ((el.p.y - 1 - 0.25f*p) * Field.tile * ratio, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1 - 0.25f*q) * Field.tile * ratio), Quaternion.identity);
+							else if (r <= 4)
+								c = (GameObject)Instantiate (object3, new Vector3 ((el.p.y - 1 - 0.25f*p) * Field.tile * ratio, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1 - 0.25f*q) * Field.tile * ratio), Quaternion.identity);
+							else
+								c = (GameObject)Instantiate (object2, new Vector3 ((el.p.y - 1 - 0.25f*p) * Field.tile * ratio, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1 - 0.25f*q) * Field.tile * ratio), Quaternion.identity);
+							
+							c.transform.position = new Vector3 (c.transform.position.x, (float)(c.transform.position.y + disp * c.transform.localScale.y / 2-5), c.transform.position.z);
+							c.transform.eulerAngles = new Vector3 (c.transform.rotation.x, Random.Range (0, 360), c.transform.rotation.z);
 					}
 				}
 
@@ -185,7 +187,9 @@ public class CityPicker : MonoBehaviour {
 		int i = 0;
 
 		foreach (Elem el in h.elems) {
-						int r = Random.Range (3, 11);
+			
+
+			int r = Random.Range (3, 11);
 						GameObject c; 
 						if (r > 2) {
 							for (int j=0;j<4;j++){
@@ -193,14 +197,13 @@ public class CityPicker : MonoBehaviour {
 								int p = pq[j*2];
 								int q = pq[j*2+1];
 								if (r<2){
-									if (r == 0){
-										
-										c = (GameObject)Instantiate (object2, new Vector3 ((el.p.y - 1 - 0.25f*p) * Field.tile * ratio, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1 - 0.25f*q) * Field.tile * ratio), Quaternion.identity);
-									}else{
-											c = (GameObject)Instantiate (object3, new Vector3 ((el.p.y - 1 - 0.25f*p) * Field.tile * ratio, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1 - 0.25f*q) * Field.tile * ratio), Quaternion.identity);
-									}
-									c.transform.position = new Vector3 (c.transform.position.x, (float)(c.transform.position.y + disp * c.transform.localScale.y / 2-5), c.transform.position.z);
-									c.transform.eulerAngles = new Vector3 (c.transform.rotation.x, Random.Range (0, 360), c.transform.rotation.z);
+										if (r == 0){
+											c = (GameObject)Instantiate (object2, new Vector3 ((el.p.y - 1 - 0.25f*p) * Field.tile * ratio, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1 - 0.25f*q) * Field.tile * ratio), Quaternion.identity);
+										}else{
+												c = (GameObject)Instantiate (object3, new Vector3 ((el.p.y - 1 - 0.25f*p) * Field.tile * ratio, Field.mat [el.p.x, el.p.y].height * 512, (el.p.x - 1 - 0.25f*q) * Field.tile * ratio), Quaternion.identity);
+										}
+										c.transform.position = new Vector3 (c.transform.position.x, (float)(c.transform.position.y + disp * c.transform.localScale.y / 2-5), c.transform.position.z);
+										c.transform.eulerAngles = new Vector3 (c.transform.rotation.x, Random.Range (0, 360), c.transform.rotation.z);
 								}
 							}
 								
@@ -219,25 +222,31 @@ public class CityPicker : MonoBehaviour {
 		return rPoints;
 	}
 
+
+
 	static bool checkArea(Vector3 v, float scale){
 
+		bool b = true;
+
 		for (int i=0;i<4;i++){
-			int p = pq[j*2];
-			int q = pq[j*2+1]; 
-			checkPoint ()
-
+			int p = pq[i*2];
+			int q = pq[i*2+1]; 
+			if (!checkPoint (new Vector3(v.x + scale/2*p, v.y, v.z + scale/2*q))){
+				b = false;
+				break;
+			}
 		}
-
+		return b;
 	}
 
 	static bool checkPoint(Vector3 v){
 
 		RaycastHit hit;
 
-		v += new Vector3 (0, 500, 0);
+		v += new Vector3 (0, 1000, 0);
 
 		if (Physics.Raycast (v, -Vector3.up, out hit)) {
-			if (hit.collider.gameObject.tag == "river") return true;
+			if (hit.collider.gameObject.CompareTag("ground")) return true;
 		}
 
 		return false;
