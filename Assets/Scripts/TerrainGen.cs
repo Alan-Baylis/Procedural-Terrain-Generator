@@ -1048,6 +1048,7 @@ public class TerrainGen : MonoBehaviour {
 								if ( h==i || h==j) continue;
 
 								if (roadPaths[i,j].length >= 0.7f*(roadPaths[i,h].length + roadPaths[h,j].length) ) skip =true;
+								if (roadPaths[i,h].length == -1 || roadPaths[h,j].length == -1) skip = false;
 							}
 
 							if (skip) continue;
