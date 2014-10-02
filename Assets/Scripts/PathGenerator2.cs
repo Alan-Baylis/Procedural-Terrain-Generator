@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class PathGenerator2 : MonoBehaviour{
-	
+
+	public Shader pathShader;
+
 	public Texture2D texture;
 	public float height;
 	
@@ -120,6 +122,11 @@ public class PathGenerator2 : MonoBehaviour{
 		mesh.RecalculateBounds();
 		mesh.Optimize();
 
+		Shader shader = Shader.Find("Custom/ExtrudeShader");
+
+		meshRenderer.material.shader = shader;
+
+		//meshRenderer.material.shader = pathShader;
 
 		meshRenderer.material.mainTexture = texture;
 

@@ -23,6 +23,7 @@ public class DrawRoads : MonoBehaviour {
 	public float heightMapSize;
 	public Texture2D roadTexture;
 	public List<VectorSet> used;
+	public Shader pathShader;
 	Elem towncenter;
 	public DrawRoads(float ts, float hms, Texture2D text) {
 		terrainSize = ts;
@@ -142,7 +143,7 @@ public class DrawRoads : MonoBehaviour {
 		for (int i=2; i<road.Count; i++) {
 						oneRoad.Add (road [i]);
 			if (inList(used, road[i], road[i-1])) {
-								generate2 (oneRoad.ToArray(), 50, 0.5f);
+								generate2 (oneRoad.ToArray(), 50, 5f);
 								oneRoad = new List<Vector2> ();
 								oneRoad.Add (road [i - 1]);
 								oneRoad.Add (road [i]);
@@ -151,7 +152,7 @@ public class DrawRoads : MonoBehaviour {
 				used.Add (new VectorSet (road [i - 1], road [i]));
 						}
 				}
-		generate2 (oneRoad.ToArray(), 50, 0.5f);
+		generate2 (oneRoad.ToArray(), 50, 5f);
 	}
 	public void generate2(Vector2[] points,int volume, float dist)
 	{
@@ -173,6 +174,7 @@ public class DrawRoads : MonoBehaviour {
 			Vector2[] edgePoints = edgePointsOnCurve (splinePoints.ToArray (), volume);
 			
 			PathGenerator2 pathGenerator = new PathGenerator2();
+			pathGenerator.pathShader = pathShader;
 			pathGenerator.texture = roadTexture;
 			pathGenerator.height = 0.5f;
 			pathGenerator.generate (new List<Vector2>(edgePoints));

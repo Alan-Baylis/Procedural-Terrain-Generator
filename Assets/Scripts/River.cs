@@ -9,6 +9,7 @@ public class Spline {
 	
 }
 public class River : MonoBehaviour {
+	public Shader pathShader;
 	public Texture2D riverTexture;
 	public float terrainSize;
 	public float heightMapSize;
@@ -160,6 +161,7 @@ public class River : MonoBehaviour {
 
 
 			PathGenerator2 pathGenerator = new PathGenerator2();
+			pathGenerator.pathShader = pathShader;
 			pathGenerator.texture = riverTexture;
 			pathGenerator.height = 0.3f;
 			pathGenerator.generate (new List<Vector2>(edgePoints));

@@ -20,7 +20,7 @@ public class CityRoads : MonoBehaviour {
 			while (ny<maxy) {
 				roadMesh.Add (new Vector2 (leftx, ny));
 				roadMesh.Add (new Vector2 (rightx, ny));
-				ny += 0.3f;
+				ny += 5f;
 			}
 			roadMesh.Add (new Vector2 (leftx, maxy));
 			roadMesh.Add (new Vector2 (rightx, maxy));
@@ -34,7 +34,7 @@ public class CityRoads : MonoBehaviour {
 				roadMesh.Add (new Vector2 (nx, righty));
 				roadMesh.Add (new Vector2 (nx, lefty));
 				//Debug.DrawLine(new Vector3(nx,1000f,righty),new Vector3(nx,1000f,lefty),Color.red,350.0f);
-				nx += 0.3f;
+				nx += 5f;
 			}
 			roadMesh.Add (new Vector2 (maxx, righty));
 			roadMesh.Add (new Vector2 (maxx, lefty));

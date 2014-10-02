@@ -4,7 +4,7 @@
 	{
 		_Color ("MainColor", Color) = (1, 1, 1, 1)
 		_MainTex ("Base (RGB)", 2D) = "white" {}
-		_Extrusion ("Extrusion", Float) = 1
+		_Extrusion ("Extrusion", Float) = 5
 	}
 	SubShader
 	{

@@ -8,6 +8,8 @@ using Delaunay.Geo;
 
 public class TerrainGen : MonoBehaviour {
 
+	public Shader pathShader;
+
 	public Texture2D road;
 	public Texture2D riverTexture;
 	public Path[,] roadPaths;
@@ -1017,6 +1019,7 @@ public class TerrainGen : MonoBehaviour {
 
 	private void generateRivers(){
 		River river = new River ();
+		river.pathShader = pathShader;
 		river.riverTexture = riverTexture;
 		river.terrainSize = m_terrainSize;
 		river.heightMapSize = m_heightMapSize;
@@ -1040,6 +1043,7 @@ public class TerrainGen : MonoBehaviour {
 		roadPaths = roadGen.paths;
 
 		DrawRoads drawRaod = new DrawRoads (m_terrainSize, m_heightMapSize, road);
+		drawRaod.pathShader = pathShader;
 		for (int i =0; i< cityCenters.Count; i++)
 						for (int j=i+1; j< cityCenters.Count; j++) {						
 							if (roadPaths[i,j].length == -1 ) continue;
