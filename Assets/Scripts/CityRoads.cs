@@ -15,8 +15,8 @@ public class CityRoads : MonoBehaviour {
 		if (Mathf.Abs(aa.x-bb.x)<0.2f) {
 			float leftx = aa.x - 5f;
 			float rightx = aa.x + 5f;
-			float ny = Mathf.Min (aa.y, bb.y);
-			float maxy = Mathf.Max (aa.y, bb.y);
+			float ny = Mathf.Min (aa.y, bb.y)-5f;
+			float maxy = Mathf.Max (aa.y, bb.y)+5f;
 			while (ny<maxy) {
 				roadMesh.Add (new Vector2 (leftx, ny));
 				roadMesh.Add (new Vector2 (rightx, ny));
@@ -28,8 +28,8 @@ public class CityRoads : MonoBehaviour {
 		if (Mathf.Abs(bb.y - aa.y)<0.2f) {
 			float lefty = aa.y - 5f;
 			float righty = aa.y + 5f;
-			float nx = Mathf.Min (aa.x, bb.x);
-			float maxx = Mathf.Max (aa.x, bb.x);
+			float nx = Mathf.Min (aa.x, bb.x)-5f;
+			float maxx = Mathf.Max (aa.x, bb.x)+5f;
 			while (nx<maxx) {
 				roadMesh.Add (new Vector2 (nx, righty));
 				roadMesh.Add (new Vector2 (nx, lefty));

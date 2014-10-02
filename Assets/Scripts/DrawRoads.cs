@@ -12,6 +12,12 @@ public class VectorSet{
 		b = bb;
 	}
 }
+//public class Spline : MonoBehaviour {
+//	
+//	public Vector2 point;
+//	public float volume;
+//	
+//}
 public class DrawRoads : MonoBehaviour {
 	public float terrainSize;
 	public float heightMapSize;
@@ -186,6 +192,7 @@ public class DrawRoads : MonoBehaviour {
 	public Elem inTown(List<Heads> l, Vector2 c){
 
 		foreach (Heads h in l){
+			if(h.elems.Count>CityPicker.villageSize)
 			foreach(Elem e in h.elems){
 				Elem p=inElem(e,c);
 				if (p!=null){

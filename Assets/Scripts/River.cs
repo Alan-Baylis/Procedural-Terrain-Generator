@@ -2,15 +2,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
+public class Spline {
+	
+	public Vector2 point;
+	public float volume;
+	
+}
 public class River : MonoBehaviour {
 	public Texture2D riverTexture;
 	public float terrainSize;
 	public float heightMapSize;
 	public float waterlimit;
 
-	public void drawRivers(List<Corner> Corner) {
-		bool[] rivermade=new bool[Corner.Count];
+	public void drawRivers(List<Corner> Corner, int num) {
+		bool[] rivermade=new bool[num];
 
 		foreach (Corner q in Corner) {
 			if (q.river > 0 && q.watershed.coast && !q.coast && !rivermade[q.index]) {
@@ -128,7 +133,7 @@ public class River : MonoBehaviour {
 								for (int j = 0; j< numPoints; j++) {
 										Spline sp = new Spline ();
 										sp.point = pointOnCurve (points [i].point, points [i + 1].point, points [i + 2].point, points [i + 3].point, (1f/numPoints) * j);
-										sp.volume = ((points [i + 2].volume - points [i + 1].volume) * j / numPoints) + points [i + 1].volume;
+										sp.volume = ((float )(points [i + 2].volume - points [i + 1].volume) * j / numPoints) + points [i + 1].volume;
 										splinePoints.Add (sp);
 								}
 						}

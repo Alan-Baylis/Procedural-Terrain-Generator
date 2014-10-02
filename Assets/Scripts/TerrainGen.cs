@@ -84,6 +84,7 @@ public class TerrainGen : MonoBehaviour {
 	public List<Center> centers = new List<Center> ();
 	public List<Edge> edges = new List<Edge>();
 	public List<Corner> corners = new List<Corner>();
+	public List<Corner> rivercorners = new List<Corner>();
 	
 	private Voronoi voronoi;
 	
@@ -727,7 +728,7 @@ public class TerrainGen : MonoBehaviour {
 		// Initially the watershed pointer points downslope one step.      
 		foreach ( Corner q in corners) {
 			q.watershed = q;
-			if (!q.ocean && !q.coast) {
+			if (!q.ocean && !q.water) {
 				q.watershed = q.downslope;
 			}
 		}
@@ -739,7 +740,7 @@ public class TerrainGen : MonoBehaviour {
 		for (i = 0; i < 10000; i++) {
 			changed = false;
 			foreach (Corner q in corners) {
-				if (!q.ocean && !q.coast && !q.watershed.coast) {
+				if (!q.ocean && !q.water && !q.watershed.water) {
 					Corner r = q.downslope.watershed;
 					if (!r.ocean) q.watershed = r;
 					changed = true;
@@ -761,11 +762,13 @@ public class TerrainGen : MonoBehaviour {
 		for (int i = 0; i <corners.Count/2; i++) {
 		//for (int i=0;i<8;i++){
 
+
 			Corner q = corners[Random.Range(0, corners.Count-1)];
 			if (q.ocean || q.elevation<waterLimit || q.elevation > 0.9f) continue;
 			//if (q.ocean || q.elevation<0.3f || q.elevation > 0.9f) {i--;continue;}
 			// Bias rivers to go west: if (q.downslope.x > q.x) continue;
-			while (!q.coast ) {
+			if (q.watershed.coast && q.river==0) rivercorners.Add(q);
+			while (!q.water ) {
 				if (q == q.downslope) {
 					break;
 				}
@@ -1013,13 +1016,12 @@ public class TerrainGen : MonoBehaviour {
 	}
 
 	private void generateRivers(){
-
 		River river = new River ();
 		river.riverTexture = riverTexture;
 		river.terrainSize = m_terrainSize;
 		river.heightMapSize = m_heightMapSize;
 		river.waterlimit = waterLimit;
-		river.drawRivers (corners);
+		river.drawRivers (rivercorners, corners.Count);
 		
 	}
 
@@ -1047,8 +1049,9 @@ public class TerrainGen : MonoBehaviour {
 							for (int h=0; h< cityCenters.Count; h++){
 								if ( h==i || h==j) continue;
 
-								if (roadPaths[i,j].length >= 0.7f*(roadPaths[i,h].length + roadPaths[h,j].length) ) skip =true;
+								if (roadPaths[i,j].length >=(0.85f)*(roadPaths[i,h].length + roadPaths[h,j].length) ) skip =true;
 								if (roadPaths[i,h].length == -1 || roadPaths[h,j].length == -1) skip = false;
+
 							}
 
 							if (skip) continue;
@@ -1077,9 +1080,9 @@ public class TerrainGen : MonoBehaviour {
 		switch(counter){
 		case 0: GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30),  "PRESS SPACE TO GENERATE TERRAIN AND TEXTURE"); break; //pravljenje terena i tekstura
 		case 1:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "PRESS SPACE TO GENERATE RIVERS");break;				 //reke
-		case 2:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "PRESS SPACE TO GENERATE VEGETATION");break;			 //vegetacija
-		case 3:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "PRESS SPACE TO GENERATE CITIES");break;	 //gradovi
-		case 4:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "PRESS SPACE TO GENERATE ROADS");break;	 //putevi
+		case 4:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "PRESS SPACE TO GENERATE VEGETATION");break;			 //vegetacija
+		case 2:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "PRESS SPACE TO GENERATE CITIES");break;	 //gradovi
+		case 3:  GUI.Box (new Rect (Screen.width/2-200, 20, 400, 30), "PRESS SPACE TO GENERATE ROADS");break;	 //putevi
 		}
 	}
 	int counter = 0;
