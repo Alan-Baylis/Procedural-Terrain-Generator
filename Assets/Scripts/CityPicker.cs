@@ -5,9 +5,9 @@ using System.Collections.Generic;
 public enum cityKind{VILLAGE, TOWN, METRO, DESERT, FIELD, NONE};
 
 public class CityPicker : MonoBehaviour {
-	
 
-	const int villageSize = 4;
+
+	public const int villageSize = 4;
 	const int townSize = 8;
 	static float disp = 0.55f;
 	static int[] pq = {-1,-1,-1,1,1,-1,1,1};
@@ -96,7 +96,7 @@ public class CityPicker : MonoBehaviour {
 
 		Vector3[] rPoints = new Vector3[h.elems.Count*4];
 		
-		int m = 0;
+
 
 		if (Mathf.Abs (h.c.west.x - h.c.east.x) < numRows * Field.tile)
 						numRows = 2;
@@ -119,11 +119,11 @@ public class CityPicker : MonoBehaviour {
 				}
 			}
 
-			rPoints[m++] = new Vector3((el.p.y - 1) * Field.tile * ratio-Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio-Field.tile*ratio/2);
+			/*rPoints[m++] = new Vector3((el.p.y - 1) * Field.tile * ratio-Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio-Field.tile*ratio/2);
 			rPoints[m++] = new Vector3((el.p.y - 1) * Field.tile * ratio-Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio+Field.tile*ratio/2);
 			rPoints[m++] = new Vector3((el.p.y - 1) * Field.tile * ratio+Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio+Field.tile*ratio/2);
 			rPoints[m++] = new Vector3((el.p.y - 1) * Field.tile * ratio+Field.tile*ratio/2, el.height*1000, (el.p.x - 1) * Field.tile * ratio-Field.tile*ratio/2);
-
+			*/
 
 		}
 
@@ -147,7 +147,7 @@ public class CityPicker : MonoBehaviour {
 			GameObject c;
 			if (r > 2) {
 				for (int j=0;j<4;j++){
-					r = Random.Range (0, 12);
+					r = Random.Range (0, 11);
 					int p = pq[j*2];
 					int q = pq[j*2+1];
 					if (r<10){				
@@ -188,6 +188,7 @@ public class CityPicker : MonoBehaviour {
 
 		foreach (Elem el in h.elems) {
 			
+
 
 			int r = Random.Range (3, 11);
 						GameObject c; 

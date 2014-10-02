@@ -29,13 +29,20 @@ public class Center {
 	public BiomeTypes getBiome() {
 		BiomeTypes b;
 		if (this.ocean) {
+			foreach( Corner e in this.corners)
+				if (e.river>10) return BiomeTypes.TROPICAL_RAIN_FOREST;
 			return BiomeTypes.OCEAN;
 		} else if (this.water) {
+			foreach( Corner e in this.corners)
+				if (e.river>10) return BiomeTypes.TROPICAL_RAIN_FOREST;
 			if (this.elevation < 0.3f) return BiomeTypes.MARSH;
 			if (this.elevation > 0.85f) return BiomeTypes.ICE;
 			return BiomeTypes.LAKE;
 		} else if (this.coast) {
+			foreach( Corner e in this.corners)
+				if (e.river>10) return BiomeTypes.TROPICAL_RAIN_FOREST;
 			return BiomeTypes.BEACH;
+
 		} else if (this.elevation > 0.8f) return BiomeTypes.ICE;
 		 else if (this.elevation > 0.7f) {
 			if (this.moisture > 0.5f) return BiomeTypes.SNOW;
